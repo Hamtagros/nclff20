@@ -1026,6 +1026,7 @@
   "FFd20.RestoreHealth": "Restore Health",
   "FFd20.RestoreDailyUses": "Restore Daily Uses",
   "FFd20.LongTermCare": "Long-Term Care",
+  "FFd20.aidedCare": "Aided Care (caregiver has 5 ranks in heal)",
 
   "FFd20.BonusModifierUntyped": "Untyped",
   "FFd20.BonusModifierUntypedPerm": "Untyped (Permanent)",

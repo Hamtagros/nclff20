@@ -23197,7 +23197,7 @@ class ActorPF extends ActorBasePF {
     return getProperty(this, `itemFlags.boolean.${flagName}`) != null;
   }
 
-  async performRest({ restoreHealth = true, longTermCare = false, restoreDailyUses = true, hours = 8 } = {}) {
+  async performRest({ restoreHealth = true, longTermCare = false, aidedCare = false, restoreDailyUses = true, hours = 8 } = {}) {
     const actorData = this.data.data;
 
     const updateData = {};
@@ -23310,6 +23310,7 @@ class ActorPF extends ActorBasePF {
       {
         restoreHealth,
         longTermCare,
+        aidedCare,
         restoreDailyUses,
         hours,
       },
@@ -23681,6 +23682,7 @@ class ActorRestDialog extends DocumentSheet {
     this.object.performRest({
       restoreHealth: formData["restoreHealth"],
       longTermCare: formData["longTermCare"],
+      aidedcare: formData["aidedCare"],
       restoreDailyUses: formData["restoreDailyUses"],
       hours: formData["hours"],
     });
