@@ -1,0 +1,199 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+
+  {{!-- Item Sheet Header --}}
+  <header class="sheet-header flexrow">
+    <img class="profile" src="{{item.img}}" title="{{item.name}}" data-edit="img"/>
+
+    <div class="header-details flexrow">
+      <h1 class="charname">
+        <input name="name" type="text" value="{{item.name}}" placeholder="{{localize "FFd20.ItemName"}}"/>
+      </h1>
+
+      <div class="item-subtitle">
+        <h4 class="item-type">{{itemType}}</h4>
+        <span class="item-status">{{itemStatus}}</span>
+      </div>
+
+      <ul class="summary">
+        <li>
+          {{lookup config.classTypes data.classType}}
+        </li>
+        <li class="tooltip">
+          <span class="tooltipcontent">@classes.{{item.data.data.tag}}.level : {{data.level}}</span>
+          <input type="text" name="data.level" value="{{data.level}}" placeholder="{{#if isMythicPath}}{{localize "FFd20.Tier"}}{{else}}{{localize "FFd20.Level"}}{{/if}}" data-dtype="Number"/>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  {{!-- Item Sheet Navigation --}}
+  <nav class="sheet-navigation tabs" data-group="primary">
+    <a class="item" data-tab="description">{{ localize "FFd20.Description" }}</a>
+    <a class="item" data-tab="details">{{ localize "FFd20.Details" }}</a>
+    <a class="item" data-tab="changes">{{localize "FFd20.Changes"}}</a>
+    <a class="item" data-tab="links">{{localize "FFd20.Links"}}</a>
+    <a class="item" data-tab="advanced">{{localize "FFd20.Advanced"}}</a>
+  </nav>
+
+  {{!-- Item Sheet Body --}}
+  <section class="primary-body">
+
+    {{!-- Description Tab --}}
+    <div class="tab flexcol" data-group="primary" data-tab="description">
+      {{roll-editor content=data.description.value target="data.description.value" button=true owner=owner editable=editable}}
+    </div>
+
+    {{!-- Details Tab --}}
+    <div class="tab details" data-group="primary" data-tab="details">
+
+      {{!-- Class Type --}}
+      <div class="form-group">
+        <label>{{localize "FFd20.ClassType"}}</label>
+        <select name="data.classType">
+          {{#select data.classType}}
+          {{#each config.classTypes as |name type|}}
+          <option value="{{type}}">{{name}}</option>
+          {{/each}}
+          {{/select}}
+        </select>
+      </div>
+
+      {{!-- HD --}}
+      <div class="form-group">
+        <label>{{localize "FFd20.HitDie"}}</label>
+        <input type="text" name="data.hd" value="{{data.hd}}" data-dtype="Number" />
+      </div>
+
+      {{!-- HD count --}}
+      <div class="form-group">
+        <label>{{localize "FFd20.CustomHitDice"}}</label>
+        <input type="text" name="data.customHD" value="{{data.customHD}}" data-dtype="String" placeholder="{{localize "FFd20.CustomHitDiceHint"}}"/>
+      </div>
+
+      {{!-- Hit Points --}}
+      {{#unless healthConfig.auto}}
+      <div class="form-group">
+        <label>{{localize "FFd20.HitPoints"}}</label>
+        <input type="text" name="data.hp" value="{{data.hp}}" data-dtype="Number" />
+      </div>
+      {{/unless}}
+
+      {{!-- BAB --}}
+      <div class="form-group">
+        <label>{{localize "FFd20.BABAbbr"}}</label>
+        <select name="data.bab">
+          {{#select data.bab}}
+          <option value="">{{localize "FFd20.None"}}</option>
+          {{#each config.classBAB as |name value|}}
+          <option value="{{value}}">{{name}}</option>
+          {{/each}}
+          {{/select}}
+        </select>
+        {{#if (eq data.bab "custom")}}
+        <label>{{localize "FFd20.Formula"}}</label>
+        <input type='text' name='data.babFormula' value='{{data.babFormula}}'>
+        {{/if}}
+      </div>
+
+      {{!-- Skills/Level --}}
+      <div class="form-group">
+        <label>{{localize "FFd20.SkillsPerLevel"}}</label>
+        <input type="text" name="data.skillsPerLevel" value="{{data.skillsPerLevel}}" data-dtype="Number" />
+      </div>
+
+      {{!-- Proficiencies --}}
+      <div class="form-group {{data.armorProf.cssClass}}">
+        <label for="data.weaponProf">{{localize "FFd20.TraitWeaponProf"}}</label>
+        <ul class="traits-list tag-list">
+          {{#each data.weaponProf.selected as |v k|}}
+            <li class="tag {{k}}">{{v}}</li>
+          {{/each}}
+        </ul>
+        <a class="trait-selector" data-options="weaponProficiencies"><i class="fas fa-edit"></i></a>
+      </div>
+
+      <div class="form-group {{data.armorProf.cssClass}}">
+        <label for="data.armorProf">{{localize "FFd20.TraitArmorProf"}}</label>
+        <ul class="traits-list tag-list">
+          {{#each data.armorProf.selected as |v k|}}
+            <li class="tag {{k}}">{{v}}</li>
+          {{/each}}
+        </ul>
+        <a class="trait-selector" data-options="armorProficiencies"><i class="fas fa-edit"></i></a>
+      </div>
+
+      <h4 class="form-header">{{localize "FFd20.SavingThrowPlural"}}</h4>
+
+      {{!-- Saving Throws --}}
+      {{#each data.savingThrows as |savingThrow id|}}
+      <div class="form-group">
+        <label>{{savingThrow.label}}</label>
+        <select name="data.savingThrows.{{id}}.value">
+          {{#select savingThrow.value}}
+          <option value="">{{localize "FFd20.None"}}</option>
+          {{#each ../config.classSavingThrows as |name value|}}
+          <option value="{{value}}">{{name}}</option>
+          {{/each}}
+          {{/select}}
+        </select>
+        {{#if (eq savingThrow.value "custom")}}
+        <label>{{localize "FFd20.Formula"}}</label>
+        <input name="data.savingThrows.{{id}}.custom" type="text" value="{{savingThrow.custom}}" />
+        {{/if}}
+      </div>
+      {{/each}}
+
+      <h4 class="form-header">{{localize "FFd20.Advanced"}}</h4>
+
+      <div class="form-group">
+        <label>{{localize "FFd20.Tag"}}</label>
+        <input {{#unless data.useCustomTag}}disabled{{/unless}} type="text" name="data.tag" value="{{data.tag}}" placeholder="{{localize "FFd20.Tag"}}" />
+        <label>{{localize "FFd20.Custom"}}</label>
+        <input type="checkbox" name="data.useCustomTag" {{checked data.useCustomTag}} />
+      </div>
+
+      {{#if isBaseClass}}
+      <h4 class="form-header">{{localize "FFd20.FavouredClassBonuses"}}</h4>
+
+      {{!-- Favoured Class Bonuses --}}
+      {{#each data.fc as |fc id|}}
+      <div class="form-group">
+        <label>{{fc.label}}</label>
+        <input type="text" name="data.fc.{{id}}.value" value="{{fc.value}}" data-dtype="Number" />
+      </div>
+      {{/each}}
+      <div class="form-group">
+        <label>{{localize 'FFd20.Notes'}}</label>
+        <input type="text" name="data.fc.alt.notes" value="{{data.fc.alt.notes}}" data-dtype="String" />
+      </div>
+      {{/if}}
+
+      <h4 class="form-header">{{localize "FFd20.ClassSkills"}}</h4>
+
+      <div class="form-group">
+        <ol class="item-list">
+        {{#each skills as |skill key|}}
+        <li class="item flexrow" data-skill="{{key}}">
+          <label class="checkbox skill-cs">
+            <input type="checkbox" name="data.classSkills.{{key}}" {{checked skill.classSkill}} />
+          </label>
+          <h4>{{skill.name}}</h4>
+        </li>
+        {{/each}}
+        </ol>
+      </div>
+    </div>
+
+    <div class="tab flexcol" data-group="primary" data-tab="changes">
+      {{~> "systems/FFd20/templates/items/parts/item-changes.hbs"}}
+    </div>
+
+    <div class="tab flexcol" data-group="primary" data-tab="links">
+      {{> "systems/FFd20/templates/items/parts/item-links.hbs"}}
+    </div>
+
+    <div class="tab flexcol" data-group="primary" data-tab="advanced">
+      {{> "systems/FFd20/templates/items/parts/item-advanced.hbs"}}
+    </div>
+  </section>
+</form>

@@ -1,0 +1,99 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+
+  {{!-- Item Sheet Header --}}
+  <header class="sheet-header loot-header flexrow">
+    <img class="profile" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
+
+    <div class="header-details flexrow">
+      {{> "systems/FFd20/templates/items/parts/item-name.hbs"}}
+
+      <ul class="summary">
+        <li>
+          {{itemType}}
+        </li>
+        <li>
+          {{#unless showUnidentifiedData}}{{lookup config.lootTypes data.subType}}{{/unless}}
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  {{!-- Item Sheet Navigation --}}
+  <nav class="sheet-navigation tabs" data-group="primary">
+    <a class="item" data-tab="description">{{ localize "FFd20.Description" }}</a>
+    <a class="item" data-tab="details">{{ localize "FFd20.Details" }}</a>
+    {{#unless showUnidentifiedData}}
+    <a class="item" data-tab="changes">{{ localize "FFd20.Changes" }}</a>
+    {{/unless}}
+    <a class="item" data-tab="links">{{localize "FFd20.Links"}}</a>
+    {{#unless showUnidentifiedData}}
+    <a class="item" data-tab="advanced">{{localize "FFd20.Advanced"}}</a>
+    {{/unless}}
+  </nav>
+
+  {{!-- Item Sheet Body --}}
+  <section class="primary-body">
+    {{> "systems/FFd20/templates/items/parts/item-description.hbs"}}
+
+    <div class="tab details" data-group="primary" data-tab="details">
+      {{> "systems/FFd20/templates/items/parts/item-aura.hbs"}}
+
+      <h3 class="form-header">{{localize "FFd20.Details"}}</h3>
+
+      {{!-- Loot Type --}}
+      <div class="form-group">
+        <label>{{localize "FFd20.Type"}}</label>
+        <select name="data.subType">
+          {{#select data.subType}}
+          {{#each config.lootTypes as |name type|}}
+          <option value="{{type}}">{{name}}</option>
+          {{/each}}
+          {{/select}}
+        </select>
+      </div>
+
+      {{#if (eq data.subType "ammo")}}
+        <div class="form-group">
+          <label>{{localize "FFd20.Subtype"}}</label>
+          <select name="data.extraType">
+            {{#select data.extraType}}
+            <option value=""></option>
+            {{#each config.ammoTypes as |name type|}}
+              <option value="{{type}}">{{name}}</option>
+            {{/each}}
+            {{/select}}
+          </select>
+        </div>
+      {{/if}}
+
+      {{!-- Item Size --}}
+      {{> "systems/FFd20/templates/items/parts/item-size.hbs"}}
+
+      {{#if isGM}}
+      <label class="checkbox">
+        <input type="checkbox" name="data.identified" {{checked data.identified}}/> {{localize "FFd20.Identified"}}
+      </label>
+      {{/if}}
+
+      {{!-- Advanced Tag --}}
+      {{> "systems/FFd20/templates/items/parts/item-tag.hbs"}}
+    </div>
+
+    {{!-- Changes Tab --}}
+    {{#unless showUnidentifiedData}}
+    <div class="tab flexcol" data-group="primary" data-tab="changes">
+      {{~> "systems/FFd20/templates/items/parts/item-changes.hbs"}}
+    </div>
+    {{/unless}}
+
+    <div class="tab flexcol" data-group="primary" data-tab="links">
+      {{> "systems/FFd20/templates/items/parts/item-links.hbs"}}
+    </div>
+
+    {{#unless showUnidentifiedData}}
+    <div class="tab flexcol" data-group="primary" data-tab="advanced">
+      {{> "systems/FFd20/templates/items/parts/item-advanced.hbs"}}
+    </div>
+    {{/unless}}
+  </section>
+</form>

@@ -1,0 +1,14 @@
+<div class="form-group">
+    <label>{{localize "TOKEN.VisionLowLight"}}:</label>
+    <input type="checkbox" name="flags.FFd20.lowLightVision" data-dtype="Boolean" {{checked object.flags.FFd20.lowLightVision}}/>
+</div>
+
+<div class="form-group slim">
+    <label>{{localize "TOKEN.VisionLowLightMultiplier"}}</label>
+    <div class="form-fields">
+        <label>{{localize "TOKEN.VisionDim"}}</label>
+        <input type="number" name="flags.FFd20.lowLightVisionMultiplier" data-dtype="Number" placeholder="2" title="{{localize "FFd20.Dim"}}" value="{{object.flags.FFd20.lowLightVisionMultiplier}}"/>
+        <label>{{localize "TOKEN.VisionBright"}}</label>
+        <input type="number" name="flags.FFd20.lowLightVisionMultiplierBright" data-dtype="Number" placeholder="2" title="{{localize "FFd20.Bright"}}" value="{{object.flags.FFd20.lowLightVisionMultiplierBright}}"/>
+    </div>
+</div>
