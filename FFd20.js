@@ -2686,7 +2686,7 @@ class TooltipConfig extends FormApplication {
   }
 }
 
-class TooltipPF extends Application {
+class TooltipFFd20 extends Application {
   constructor() {
     super();
 
@@ -3045,7 +3045,7 @@ class TooltipPF extends Application {
   static toggle(enable) {
     if (enable) {
       if (!game.FFd20.tooltip) {
-        game.FFd20.tooltip = new TooltipPF();
+        game.FFd20.tooltip = new TooltipFFd20();
         Hooks.on("hoverToken", game.FFd20.tooltip.tokenHover);
       }
       game.FFd20.tooltip?.setPosition();
@@ -3190,7 +3190,7 @@ const registerSystemSettings = function () {
     onChange: (settings) => {
       const worldConf = game.settings.get("FFd20", "tooltipWorldConfig");
       const enable = !worldConf.disabled && !settings.disabled;
-      TooltipPF.toggle(enable);
+      TooltipFFd20.toggle(enable);
     },
   });
 
@@ -3210,7 +3210,7 @@ const registerSystemSettings = function () {
     type: Object,
     config: false,
     onChange: (settings) => {
-      TooltipPF.toggle(!settings.disable);
+      TooltipFFd20.toggle(!settings.disable);
       game.FFd20.tooltip?.setPosition();
     },
   });
@@ -4161,7 +4161,7 @@ const convertDistance = function (value, type = "ft") {
  * @param {Point} p1 End point on canvas
  * @param {Object} options Measuring options.
  * @param {boolean} options.altReach Use alternate reach weapon diagonal rule at 10 ft range.
- * @param {"5105"|"555"} options.diagonalRule Used diagonal rule. Defaults to 5/10/5 PF measuring.
+ * @param {"5105"|"555"} options.diagonalRule Used diagonal rule. Defaults to 5/10/5 FFD20 measuring.
  * @param {Ray} options.ray Pre-generated ray to use instead of the points.
  * @param {MeasureState} options.state Optional state tracking across multiple measures.
  * @returns {number} Grid distance between the two points.
@@ -4333,7 +4333,7 @@ const colorToInt = function (color) {
 /**
  * Assembles an array of all possible buff targets.
  *
- * @param {ActorPF} [actor] - An actor for which to specifically get buff targets.
+ * @param {ActorFFd20} [actor] - An actor for which to specifically get buff targets.
  * @param {string} [type] - Can be set to "contextNotes" to get context notes instead.
  * @returns {object.<string, BuffTargetItem>} The resulting array of buff targets.
  */
@@ -4368,7 +4368,7 @@ const getBuffTargets = function (actor, type = "buffs") {
 /**
  * Assembles an array of buff targets and their categories, ready to be inserted into a Widget_CategorizedItemPicker.
  *
- * @param {ActorPF} [actor] - An actor for which to specifically get buff targets.
+ * @param {ActorFFd20} [actor] - An actor for which to specifically get buff targets.
  * @param {string} [type] - Can be set to "contextNotes" to get context notes instead.
  * @returns {Widget_CategorizedItemPicker~Category[]}
  */
@@ -4575,13 +4575,13 @@ function stripRollFlairs(formula) {
  */
 function simplifyFormula(formula, rollData = {}, safeEvalOpts) {
   const temp = [];
-  const terms = RollPF.parse(stripRollFlairs(formula), rollData);
+  const terms = RollFFd20.parse(stripRollFlairs(formula), rollData);
   for (const term of terms) {
     if (term instanceof DiceTerm || term instanceof OperatorTerm) {
       temp.push(term);
     } else if (term.isDeterministic) {
-      const evl = RollPF.safeEval(term.formula, {}, safeEvalOpts);
-      temp.push(...RollPF.parse(`${evl}`));
+      const evl = RollFFd20.safeEval(term.formula, {}, safeEvalOpts);
+      temp.push(...RollFFd20.parse(`${evl}`));
     } else {
       temp.push(term);
     }
@@ -4600,14 +4600,14 @@ function simplifyFormula(formula, rollData = {}, safeEvalOpts) {
         temp.shift(); // remove if-true val
         const elseOp = temp.shift();
         const falseVal = temp.shift();
-        const simpler = RollPF.safeEval(
+        const simpler = RollFFd20.safeEval(
           [prev.formula, term.formula, next.formula, elseOp?.formula ?? "", falseVal?.formula ?? ""].join("")
         );
-        term = RollPF.parse(`${simpler}`)[0];
+        term = RollFFd20.parse(`${simpler}`)[0];
         temp2.pop(); // Remove last term
       } else if (prev instanceof NumericTerm && next instanceof NumericTerm) {
-        const simpler = RollPF.safeEval([prev.formula, term.formula, next.formula].join(""));
-        term = RollPF.parse(`${simpler}`)[0];
+        const simpler = RollFFd20.safeEval([prev.formula, term.formula, next.formula].join(""));
+        term = RollFFd20.parse(`${simpler}`)[0];
         temp2.pop(); // Remove the last numeric term
         temp.shift(); // Remove the next term
       }
@@ -4615,7 +4615,7 @@ function simplifyFormula(formula, rollData = {}, safeEvalOpts) {
     temp2.push(term);
   }
 
-  return RollPF.simplifyTerms(temp2)
+  return RollFFd20.simplifyTerms(temp2)
     .map((tt) => tt.formula)
     .join("");
 }
@@ -4722,15 +4722,15 @@ function calculateRangeFormula(formula, type = "ft", rollData = {}) {
     case "reach":
       return getProperty(rollData, "range.reach") ?? 0;
     case "close":
-      return RollPF.safeRoll(CONFIG.FFd20.spellRangeFormulas.close, rollData).total;
+      return RollFFd20.safeRoll(CONFIG.FFd20.spellRangeFormulas.close, rollData).total;
     case "medium":
-      return RollPF.safeRoll(CONFIG.FFd20.spellRangeFormulas.medium, rollData).total;
+      return RollFFd20.safeRoll(CONFIG.FFd20.spellRangeFormulas.medium, rollData).total;
     case "long":
-      return RollPF.safeRoll(CONFIG.FFd20.spellRangeFormulas.long, rollData).total;
+      return RollFFd20.safeRoll(CONFIG.FFd20.spellRangeFormulas.long, rollData).total;
     case "mi":
-      return RollPF.safeRoll(formula, rollData).total * 5_280;
+      return RollFFd20.safeRoll(formula, rollData).total * 5_280;
     default:
-      return RollPF.safeRoll(formula, rollData).total;
+      return RollFFd20.safeRoll(formula, rollData).total;
   }
 }
 
@@ -4786,7 +4786,7 @@ const registerHandlebarsHelpers = function () {
   Handlebars.registerHelper("distanceUnit", (type) => convertDistance(0, type)[1]);
 
   Handlebars.registerHelper("itemRange", (item, rollData) => {
-    // ItemPF.range is not accessible here and is thus largely duplicated here
+    // ItemFFd20.range is not accessible here and is thus largely duplicated here
 
     const range = item.data.range.value;
     const rangeType = item.data.range.units;
@@ -4811,7 +4811,7 @@ const registerHandlebarsHelpers = function () {
     const rv = [];
 
     const reduceFormula = (formula) => {
-      const roll = RollPF.safeRoll(formula, rollData);
+      const roll = RollFFd20.safeRoll(formula, rollData);
       formula = roll.formula.replace(/\[[^\]]+\]/g, ""); // remove flairs
       return [roll, formula];
     };
@@ -5103,7 +5103,7 @@ TokenHUD.prototype._onToggleEffect = function (event, { overlay = false } = {}) 
 /**
  * Applies patches to core functions to integrate Pathfinder specific measurements.
  */
-class TemplateLayerPF extends TemplateLayer {
+class TemplateLayerFFd20 extends TemplateLayer {
   // Foundry does not respect CONFIG.MeasuredTemplate.documentClass and CONFIG.MeasuredTemplate.objectClass
   async _onDragLeftStart(event) {
     if (!game.settings.get("FFd20", "measureStyle")) return super._onDragLeftStart(event);
@@ -5192,7 +5192,7 @@ class TemplateLayerPF extends TemplateLayer {
   }
 }
 
-class MeasuredTemplatePF extends MeasuredTemplate {
+class MeasuredTemplateFFd20 extends MeasuredTemplate {
   getHighlightedSquares() {
     if (!game.settings.get("FFd20", "measureStyle") || !["circle", "cone", "ray"].includes(this.data.t)) return [];
 
@@ -5380,7 +5380,7 @@ class MeasuredTemplatePF extends MeasuredTemplate {
 /**
  * Apply patches to Core Foundry to implement Pathfinder's Low-Light Vision rules
  */
-class SightLayerPF extends SightLayer {
+class SightLayerFFd20 extends SightLayer {
   hasLowLight() {
     console.warn("SightLayer#hasLowLight is deprecated in favor of SightLayer#lowLightMultiplier");
 
@@ -5477,7 +5477,7 @@ const addLowLightVisionToTokenConfig = function (app, html) {
   html.find('.tab[data-group="light"][data-tab="basic"]').append(checkbox);
 };
 
-class AmbientLightPF extends AmbientLight {
+class AmbientLightFFd20 extends AmbientLight {
   get disableLowLight() {
     return getProperty(this.data, "flags.FFd20.disableLowLight") === true;
   }
@@ -5499,7 +5499,7 @@ class AmbientLightPF extends AmbientLight {
  * Polymorphic base class.
  * Should be fairly empty, only containing functionality that all actors should have regardless of type.
  */
-class ActorBasePF extends Actor {
+class ActorBaseFFd20 extends Actor {
   /**
    * Polymorphic constructor.
    *
@@ -5537,7 +5537,7 @@ function getAbilityModifier(score = null, options = {}) {
   return 0;
 }
 
-class ChatMessagePF extends ChatMessage {
+class ChatMessageFFd20 extends ChatMessage {
   get isRoll() {
     return this.data.type === CONST.CHAT_MESSAGE_TYPES.ROLL || this.getFlag("FFd20", "noRollRender");
   }
@@ -5545,7 +5545,7 @@ class ChatMessagePF extends ChatMessage {
   /**
    * Return linked item or falsey
    *
-   * @type {ItemPF}
+   * @type {ItemFFd20}
    */
   get itemSource() {
     const itemId = this.data.flags?.FFd20?.metadata?.item;
@@ -5557,7 +5557,7 @@ class ChatMessagePF extends ChatMessage {
   /**
    * Return associated template or null.
    *
-   * @type {MeasuredTemplatePF}
+   * @type {MeasuredTemplateFFd20}
    */
   get measureTemplate() {
     const templateId = this.data.flags?.FFd20?.metadata?.template;
@@ -5567,7 +5567,7 @@ class ChatMessagePF extends ChatMessage {
   }
 
   /**
-   * @returns {TokenPF[]} The tokens which were targeted with this chat card.
+   * @returns {TokenFFd20[]} The tokens which were targeted with this chat card.
    */
   get targets() {
     const targetIds = this.data.flags?.FFd20?.metadata?.targets ?? [];
@@ -5595,7 +5595,7 @@ const customRolls = function (message, speaker, rollData) {
       case "H":
       case "HEAL": {
         rollData = rollData ?? actor?.getRollData() ?? {};
-        const roll = RollPF.safeRoll(value, rollData);
+        const roll = RollFFd20.safeRoll(value, rollData);
         roll.total;
 
         return (async () => {
@@ -5624,7 +5624,7 @@ const formulaHasDice = function (formula) {
   return formula.match(/[0-9)][dD]/) || formula.match(/[dD][0-9(]/);
 };
 
-class DicePF {
+class DiceFFd20 {
   /**
    * A standardized helper function for managing game system rolls.
    *
@@ -5747,7 +5747,7 @@ class DicePF {
           // Send message
           rolled = true;
 
-          if (chatMessage) return await ChatMessagePF.create(chatData);
+          if (chatMessage) return await ChatMessageFFd20.create(chatData);
         } else {
           rolled = true;
           if (chatMessage) {
@@ -5921,7 +5921,7 @@ class DicePF {
 
         // Send message
         rolled = true;
-        if (chatMessage) ChatMessagePF.create(chatData);
+        if (chatMessage) ChatMessageFFd20.create(chatData);
       } else {
         rolled = true;
         if (chatMessage) {
@@ -5986,7 +5986,7 @@ class DicePF {
   static messageRoll({ data, msgStr }) {
     const re = /\[\[(.+)\]\]/g;
     return msgStr.replace(re, (_, p1) => {
-      const roll = RollPF.safeRoll(p1, data);
+      const roll = RollFFd20.safeRoll(p1, data);
       return roll.total.toString();
     });
   }
@@ -5996,7 +5996,7 @@ class DicePF {
  * Polymorphic base class.
  * Should be fairly empty, only containing functionality that all items should have regardless of type.
  */
-class ItemBasePF extends Item {
+class ItemBaseFFd20 extends Item {
   /**
    * Polymorphic constructor.
    *
@@ -13239,7 +13239,7 @@ const createCustomChatMessage = async function (
   chatData.content = await renderTemplate(chatTemplate, chatTemplateData);
 
   // Handle different roll modes
-  game.FFd20.chat.ChatMessagePF.applyRollMode(chatData, chatData.rollMode ?? game.settings.get("core", "rollMode"));
+  game.FFd20.chat.ChatMessageFFd20.applyRollMode(chatData, chatData.rollMode ?? game.settings.get("core", "rollMode"));
 
   // Dice So Nice integration
   if (chatData.roll != null && rolls.length === 0) rolls = [chatData.roll];
@@ -13250,7 +13250,7 @@ const createCustomChatMessage = async function (
     }
   }
 
-  return game.FFd20.chat.ChatMessagePF.create(chatData);
+  return game.FFd20.chat.ChatMessageFFd20.create(chatData);
 };
 
 const hideRollInfo = function (app, html, data) {
@@ -15530,7 +15530,7 @@ const getHighestChanges = function (changes, options = { ignoreTarget: false }) 
   return changes;
 };
 
-class RollPF$1 extends Roll {
+class RollFFd20$1 extends Roll {
   get totalHalved() {
     return Math.floor(this.total / 2);
   }
@@ -15552,7 +15552,7 @@ class RollPF$1 extends Roll {
   }
 
   static safeTotal(formula, data) {
-    return isNaN(+formula) ? RollPF$1.safeRoll(formula, data).total : +formula;
+    return isNaN(+formula) ? RollFFd20$1.safeRoll(formula, data).total : +formula;
   }
 
   /**
@@ -15644,7 +15644,7 @@ class RollPF$1 extends Roll {
                 return parseRollStringVariable(o);
               }
               // Return roll result
-              return RollPF$1.safeRoll(o, this.data).total;
+              return RollFFd20$1.safeRoll(o, this.data).total;
             });
 
           return game.FFd20.rollPreProcess[fn](...fnParams);
@@ -15665,7 +15665,7 @@ class RollPF$1 extends Roll {
   }
 
   /**
-   * Render the tooltip HTML for a RollPF instance
+   * Render the tooltip HTML for a RollFFd20 instance
    *
    * @returns {Promise<string>} The rendered HTML tooltip as a string
    */
@@ -15850,7 +15850,7 @@ class ItemChange {
           } else if (!isNaN(this.formula)) {
             value = parseFloat(this.formula);
           } else {
-            value = RollPF$1.safeRoll(this.formula, rollData, [t, this, rollData], {
+            value = RollFFd20$1.safeRoll(this.formula, rollData, [t, this, rollData], {
               suppressError: this.parent && !this.parent.testUserPermission(game.user, "OWNER"),
             }).total;
           }
@@ -16137,7 +16137,7 @@ class ItemScriptCall {
   /**
    * Executes the script.
    *
-   * @param {object} shared - An object passed between script calls, and which is passed back as a result of ItemPF.executeScriptCalls.
+   * @param {object} shared - An object passed between script calls, and which is passed back as a result of ItemFFd20.executeScriptCalls.
    * @param {object.<string, object>} extraParams - A dictionary containing extra parameters to pass on to the call.
    */
   async execute(shared, extraParams = {}) {
@@ -16164,10 +16164,10 @@ class ItemScriptCall {
 /**
  * Override and extend the basic :class:`Item` implementation
  */
-class ItemPF extends ItemBasePF {
+class ItemFFd20 extends ItemBaseFFd20 {
   // TODO: Remove once all broken _id references are fixed.
   get _id() {
-    console.error("ItemPF._id is obsolete; use ItemPF.id instead.");
+    console.error("ItemFFd20._id is obsolete; use ItemFFd20.id instead.");
     return this.id;
   }
 
@@ -16336,7 +16336,7 @@ class ItemPF extends ItemBasePF {
   get chargeCost() {
     const formula = getProperty(this.data, "data.uses.autoDeductChargesCost");
     if (!(typeof formula === "string" && formula.length > 0)) return 1;
-    const cost = RollPF$1.safeRoll(formula, this.getRollData()).total;
+    const cost = RollFFd20$1.safeRoll(formula, this.getRollData()).total;
     return cost;
   }
 
@@ -16378,7 +16378,7 @@ class ItemPF extends ItemBasePF {
     if (rng.minUnits !== "" && rng.minValue !== null) {
       const rollData = this.getRollData();
       const formula = { melee: "@range.melee", reach: "@range.reach" }[rng.minUnits] ?? (rng.minValue || "0");
-      return convertDistance(RollPF$1.safeRoll(formula, rollData).total)[0];
+      return convertDistance(RollFFd20$1.safeRoll(formula, rollData).total)[0];
     }
     return 0;
   }
@@ -16461,7 +16461,7 @@ class ItemPF extends ItemBasePF {
 
     const dcFormula = getProperty(data, "save.dc")?.toString() || "0";
     try {
-      result = RollPF$1.safeRoll(dcFormula, rollData).total + dcBonus;
+      result = RollFFd20$1.safeRoll(dcFormula, rollData).total + dcBonus;
     } catch (e) {
       console.error(e, dcFormula);
     }
@@ -16742,7 +16742,7 @@ class ItemPF extends ItemBasePF {
         rng.long = null;
       } else if (typeof rng.value === "string" && rng.value.length) {
         try {
-          rng.value = RollPF$1.safeTotal(rng.value, this.getRollData()).toString();
+          rng.value = RollFFd20$1.safeTotal(rng.value, this.getRollData()).toString();
         } catch (err) {
           console.error(err);
         }
@@ -16754,7 +16754,7 @@ class ItemPF extends ItemBasePF {
       const dur = duplicate(data.duration || {});
       if (["inst", "perm", "spec", "seeText"].includes(dur.units)) dur.value = game.i18n.localize("FFd20.Duration") + ":";
       else if (typeof dur.value === "string" && this.parentActor) {
-        dur.value = RollPF$1.safeRoll(dur.value || "0", this.getRollData(), [this.name, "Duration"]).total.toString();
+        dur.value = RollFFd20$1.safeRoll(dur.value || "0", this.getRollData(), [this.name, "Duration"]).total.toString();
       }
       labels.duration = [dur.value, C.timePeriods[dur.units]].filterJoin(" ");
     }
@@ -17380,7 +17380,7 @@ class ItemPF extends ItemBasePF {
     if (hasProperty(this.data, "data.uses.maxFormula")) {
       const maxFormula = getProperty(this.data, "data.uses.maxFormula");
       if (maxFormula !== "" && !formulaHasDice(maxFormula)) {
-        const roll = RollPF$1.safeRoll(maxFormula, rollData);
+        const roll = RollFFd20$1.safeRoll(maxFormula, rollData);
         setProperty(this.data, "data.uses.max", roll.total);
       } else if (formulaHasDice(maxFormula)) {
         const msg = game.i18n
@@ -17480,7 +17480,7 @@ class ItemPF extends ItemBasePF {
     if (templateData.isSpell && this.parent != null && this.parent.spellFailure > 0) {
       const spellbook = getProperty(this.parent.data, `data.attributes.spells.spellbooks.${this.data.data.spellbook}`);
       if (spellbook && spellbook.arcaneSpellFailure) {
-        templateData.spellFailure = RollPF$1.safeRoll("1d100").total;
+        templateData.spellFailure = RollFFd20$1.safeRoll("1d100").total;
         templateData.spellFailureSuccess = templateData.spellFailure > this.parentActor.spellFailure;
       }
     }
@@ -17566,7 +17566,7 @@ class ItemPF extends ItemBasePF {
       // Duration
       if (data.duration != null) {
         if (!["inst", "perm"].includes(data.duration.units) && typeof data.duration.value === "string") {
-          const duration = RollPF$1.safeRoll(data.duration.value || "0", rollData).total;
+          const duration = RollFFd20$1.safeRoll(data.duration.value || "0", rollData).total;
           dynamicLabels.duration = [duration, CONFIG.FFd20.timePeriods[data.duration.units]].filterJoin(" ");
         }
       }
@@ -17663,7 +17663,7 @@ class ItemPF extends ItemBasePF {
       xaroll;
     const rollData = this.getRollData();
     if (exAtkCountFormula.length > 0) {
-      xaroll = RollPF$1.safeRoll(exAtkCountFormula, rollData);
+      xaroll = RollFFd20$1.safeRoll(exAtkCountFormula, rollData);
       extraAttacks = Math.min(50, Math.max(0, xaroll.total)); // Arbitrarily clamp attacks
     }
     if (xaroll?.err) {
@@ -17677,7 +17677,7 @@ class ItemPF extends ItemBasePF {
     try {
       if (exAtkBonusFormula.length > 0) {
         rollData["attackCount"] = 1;
-        RollPF$1.safeRoll(exAtkBonusFormula, rollData);
+        RollFFd20$1.safeRoll(exAtkBonusFormula, rollData);
       }
     } catch (err) {
       const msg = game.i18n.localize("FFd20.ErrorItemFormula").format(this.name, this.actor?.name);
@@ -17905,7 +17905,7 @@ class ItemPF extends ItemBasePF {
 
   /**
    * Place an attack roll using an item (weapon, feat, spell, or equipment)
-   * Rely upon the DicePF.d20Roll logic for the core implementation
+   * Rely upon the DiceFFd20.d20Roll logic for the core implementation
    *
    * @param root0
    * @param root0.data
@@ -17986,7 +17986,7 @@ class ItemPF extends ItemBasePF {
       }, []);
     }
     for (const c of changeBonus) {
-      parts.push(`${c.value}[${RollPF$1.cleanFlavor(c.source)}]`);
+      parts.push(`${c.value}[${RollFFd20$1.cleanFlavor(c.source)}]`);
     }
 
     // Add proficiency penalty
@@ -18000,13 +18000,13 @@ class ItemPF extends ItemBasePF {
     }
     // Add bonus
     if (bonus) {
-      rollData.bonus = RollPF$1.safeRoll(bonus, rollData).total;
+      rollData.bonus = RollFFd20$1.safeRoll(bonus, rollData).total;
       parts.push(`@bonus[${game.i18n.localize("FFd20.SituationalBonus")}]`);
     }
 
     if ((rollData.d20 ?? "") === "") rollData.d20 = "1d20";
 
-    const roll = await RollPF$1.create([rollData.d20, ...parts.filter((p) => !!p)].join("+"), rollData).evaluate();
+    const roll = await RollFFd20$1.create([rollData.d20, ...parts.filter((p) => !!p)].join("+"), rollData).evaluate();
     return roll;
   }
 
@@ -18064,7 +18064,7 @@ class ItemPF extends ItemBasePF {
 
   /**
    * Place an attack roll using an item (weapon, feat, spell, or equipment)
-   * Rely upon the DicePF.d20Roll logic for the core implementation
+   * Rely upon the DiceFFd20.d20Roll logic for the core implementation
    *
    * @param options
    */
@@ -18079,7 +18079,7 @@ class ItemPF extends ItemBasePF {
     rollData.item = itemData;
     const title = `${this.name} - ${game.i18n.localize("FFd20.OtherFormula")}`;
 
-    const roll = await RollPF$1.create(itemData.formula, rollData).evaluate();
+    const roll = await RollFFd20$1.create(itemData.formula, rollData).evaluate();
     return roll.toMessage({
       speaker: ChatMessage.getSpeaker({ actor: this.parent }),
       flavor: itemData.chatFlavor || title,
@@ -18089,7 +18089,7 @@ class ItemPF extends ItemBasePF {
 
   /**
    * Place a damage roll using an item (weapon, feat, spell, or equipment)
-   * Rely upon the DicePF.damageRoll logic for the core implementation
+   * Rely upon the DiceFFd20.damageRoll logic for the core implementation
    *
    * @param root0
    * @param root0.data
@@ -18217,7 +18217,7 @@ class ItemPF extends ItemBasePF {
       if (formula.length == 0) continue;
       try {
         const roll = {
-          roll: await RollPF$1.create(formula, rollData).evaluate(),
+          roll: await RollFFd20$1.create(formula, rollData).evaluate(),
           damageType: part.damageType,
           type: part.type,
         };
@@ -18239,7 +18239,7 @@ class ItemPF extends ItemBasePF {
    * @param options
    */
   async useConsumable(options = { chatMessage: true }) {
-    console.warn("ItemPF.useConsumable is obsolete; use ItemPF.useAttack instead.");
+    console.warn("ItemFFd20.useConsumable is obsolete; use ItemFFd20.useAttack instead.");
     const itemData = this.data.data;
     let parts = itemData.damage.parts;
     const data = this.getRollData();
@@ -18250,7 +18250,7 @@ class ItemPF extends ItemBasePF {
     // Add effect string
     let effectStr = "";
     if (typeof itemData.effectNotes === "string" && itemData.effectNotes.length) {
-      effectStr = DicePF.messageRoll({
+      effectStr = DiceFFd20.messageRoll({
         data: data,
         msgStr: itemData.effectNotes,
       });
@@ -18261,7 +18261,7 @@ class ItemPF extends ItemBasePF {
     });
     // Submit the roll to chat
     if (effectStr === "") {
-      await RollPF$1.create(parts.join(" + ")).toMessage({
+      await RollFFd20$1.create(parts.join(" + ")).toMessage({
         speaker: ChatMessage.getSpeaker({ actor: this.parentActor }),
         flavor: game.i18n.localize("FFd20.UsesItem").format(this.name),
       });
@@ -18269,7 +18269,7 @@ class ItemPF extends ItemBasePF {
       const chatTemplate = "systems/FFd20/templates/chat/roll-ext.hbs";
       const chatTemplateData = { hasExtraText: true, extraText: effectStr };
       // Execute the roll
-      const roll = await RollPF$1.create(parts.join("+"), data).evaluate();
+      const roll = await RollFFd20$1.create(parts.join("+"), data).evaluate();
 
       // Create roll template data
       const rollData = mergeObject(
@@ -18767,7 +18767,7 @@ class ItemPF extends ItemBasePF {
   /**
    * Generates a list of targets this modifier can have.
    *
-   * @param {ItemPF} item - The item for which the modifier is to be created.
+   * @param {ItemFFd20} item - The item for which the modifier is to be created.
    * @returns {object.<string, string>} A list of targets
    */
   getConditionalTargets() {
@@ -19090,7 +19090,7 @@ class ItemPF extends ItemBasePF {
       attacks = [0];
 
     const appendAttack = (formula) => {
-      const bonus = RollPF$1.safeRoll(formula, rollData).total;
+      const bonus = RollFFd20$1.safeRoll(formula, rollData).total;
       if (Number.isFinite(bonus)) attacks.push(bonus);
     };
 
@@ -19102,7 +19102,7 @@ class ItemPF extends ItemBasePF {
     const fmAtk = itemData.formulaicAttacks?.count?.formula?.trim();
     if (fmAtk?.length > 0) {
       const fmAtkBonus = itemData.formulaicAttacks?.bonus?.formula?.trim() ?? "0";
-      const count = RollPF$1.safeRoll(fmAtk, rollData);
+      const count = RollFFd20$1.safeRoll(fmAtk, rollData);
       for (let i = 0; i < count.total; i++) {
         rollData.formulaicAttack = i + 1;
         appendAttack(fmAtkBonus);
@@ -19116,7 +19116,7 @@ class ItemPF extends ItemBasePF {
       .filter((c) => c.default && c.modifiers.find((sc) => sc.target === "attack"))
       .forEach((c) => {
         c.modifiers.forEach((cc) => {
-          const bonusRoll = RollPF$1.safeRoll(cc.formula, rollData);
+          const bonusRoll = RollFFd20$1.safeRoll(cc.formula, rollData);
           if (bonusRoll.total == 0) return;
           if (cc.subTarget?.match(/^attack\.(\d+)$/)) {
             const atk = parseInt(RegExp.$1, 10);
@@ -19185,7 +19185,7 @@ class ItemPF extends ItemBasePF {
     }
 
     // Attack bonus formula
-    const bonusRoll = RollPF$1.safeRoll(itemData.attackBonus ?? "0", rollData);
+    const bonusRoll = RollFFd20$1.safeRoll(itemData.attackBonus ?? "0", rollData);
     if (bonusRoll.total != 0)
       describePart(bonusRoll.total, bonusRoll.flavor ?? game.i18n.localize("FFd20.AttackRollBonus"), -100);
 
@@ -19221,7 +19221,7 @@ class ItemPF extends ItemBasePF {
       .forEach((c) => {
         c.modifiers.forEach((cc) => {
           if (cc.subTarget === "allAttack") {
-            const bonusRoll = RollPF$1.safeRoll(cc.formula, rollData);
+            const bonusRoll = RollFFd20$1.safeRoll(cc.formula, rollData);
             if (bonusRoll.total == 0) return;
             describePart(bonusRoll.total, c.name, -5000);
           }
@@ -19258,7 +19258,7 @@ class ItemPF extends ItemBasePF {
     for (const c of conds) {
       for (const m of c.modifiers) {
         if (m.target !== "damage") continue;
-        const roll = RollPF$1.safeRoll(m.formula, rollData);
+        const roll = RollFFd20$1.safeRoll(m.formula, rollData);
         if (roll.err) continue;
         const isModifier = mods.includes(m.type);
         fakeCondChanges.push({
@@ -19292,7 +19292,7 @@ class ItemPF extends ItemBasePF {
    * @deprecated
    */
   static toConsumable(...args) {
-    console.warn("ItemPF.toConsumable() is deprecated in favor of ItemSpellPF.toConsumable()");
+    console.warn("ItemFFd20.toConsumable() is deprecated in favor of ItemSpellFFd20.toConsumable()");
     return CONFIG.Item.documentClasses.spell.toConsumable(...args);
   }
 }
@@ -19413,10 +19413,10 @@ const hasTokenVision = function (token) {
 /**
  * Extend the base Actor class to implement additional game system logic.
  */
-class ActorPF extends ActorBasePF {
+class ActorFFd20 extends ActorBaseFFd20 {
   // TODO: Remove once all broken _id references are fixed.
   get _id() {
-    console.error("ActorPF._id is obsolete; use ActorPF.id instead.");
+    console.error("ActorFFd20._id is obsolete; use ActorFFd20.id instead.");
     return this.id;
   }
 
@@ -19468,7 +19468,7 @@ class ActorPF extends ActorBasePF {
     if (this._queuedItemUpdates === undefined) this._queuedItemUpdates = {};
 
     /**
-     * @property {ItemPF[]} containerItems
+     * @property {ItemFFd20[]} containerItems
      * All items this actor is holding in containers.
      */
     if (this.containerItems === undefined) this.containerItems = [];
@@ -19525,11 +19525,11 @@ class ActorPF extends ActorBasePF {
 
     // Roll saving throw
     if (action === "defense-save") {
-      const actor = await ItemPF._getChatCardActor(card);
+      const actor = await ItemFFd20._getChatCardActor(card);
       const saveId = button.dataset.save;
       if (actor) actor.rollSavingThrow(saveId, { event: event, skipPrompt: getSkipActionPrompt() });
     } else if (action === "save") {
-      const actors = ActorPF.getSelectedActors();
+      const actors = ActorFFd20.getSelectedActors();
       const saveId = button.dataset.type;
       let noSound = false;
       for (const a of actors) {
@@ -19569,7 +19569,7 @@ class ActorPF extends ActorBasePF {
   /**
    * Returns an array of all selected tokens, along with their actors.
    *
-   * @returns {Array.<ActorPF, Token>[]}
+   * @returns {Array.<ActorFFd20, Token>[]}
    */
   static getSelectedActors() {
     const result = [];
@@ -19885,7 +19885,7 @@ class ActorPF extends ActorBasePF {
   /**
    * Checks if there's any matching proficiency
    *
-   * @param {ItemPF } item - The item to check for.
+   * @param {ItemFFd20 } item - The item to check for.
    * @param {string} proficiencyName - The proficiency name to look for. e.g. 'lightShield' or 'mediumArmor'.
    * @returns {boolean} Whether the actor is proficient with that item.
    */
@@ -19924,7 +19924,7 @@ class ActorPF extends ActorBasePF {
       // Add spell slots based on ability bonus slot formula
       {
         const formula = spellbook.spellSlotAbilityBonusFormula || "0";
-        spellbookAbilityScore += RollPF$1.safeRoll(formula, rollData).total;
+        spellbookAbilityScore += RollFFd20$1.safeRoll(formula, rollData).total;
       }
 
       const spellbookAbilityMod = Math.floor((spellbookAbilityScore - 10) / 2);
@@ -19962,7 +19962,7 @@ class ActorPF extends ActorBasePF {
         // set auto spell level calculation offset
         if (spellbook.autoSpellLevelCalculation) {
           const autoFormula = spellbook.cl.autoSpellLevelCalculationFormula || "0";
-          const autoBonus = RollPF$1.safeTotal(autoFormula, rollData);
+          const autoBonus = RollFFd20$1.safeTotal(autoFormula, rollData);
           const autoTotal = Math.max(1, Math.min(20, total + autoBonus));
           spellbook.cl.autoSpellLevelTotal = autoTotal;
 
@@ -19978,7 +19978,7 @@ class ActorPF extends ActorBasePF {
         }
 
         // Add from bonus formula
-        const clBonus = RollPF$1.safeRoll(formula, rollData).total;
+        const clBonus = RollFFd20$1.safeRoll(formula, rollData).total;
         clTotal += clBonus;
         if (clBonus > 0) {
           setSourceInfoByName(this.sourceInfo, key, game.i18n.localize("FFd20.CasterLevelBonusFormula"), clBonus);
@@ -20024,7 +20024,7 @@ class ActorPF extends ActorBasePF {
 
         const concFormula = this.data.data.attributes.spells.spellbooks[spellbookKey].concentrationFormula;
         let formulaRoll = 0;
-        if (concFormula.length) formulaRoll = RollPF$1.safeRoll(spellbook.concentrationFormula, rollData).total;
+        if (concFormula.length) formulaRoll = RollFFd20$1.safeRoll(spellbook.concentrationFormula, rollData).total;
 
         const concentration = clTotal + spellbookAbilityMod + formulaRoll - rollData.attributes.energyDrain;
         this.data.data.attributes.spells.spellbooks[spellbookKey].concentration = {
@@ -20033,7 +20033,7 @@ class ActorPF extends ActorBasePF {
       }
 
       const getAbilityBonus = (a) =>
-        a !== 0 && typeof spellbookAbilityMod === "number" ? ActorPF.getSpellSlotIncrease(spellbookAbilityMod, a) : 0;
+        a !== 0 && typeof spellbookAbilityMod === "number" ? ActorFFd20.getSpellSlotIncrease(spellbookAbilityMod, a) : 0;
       // Spell slots
       {
         const useAuto = spellbook.autoSpellLevelCalculation;
@@ -20082,7 +20082,7 @@ class ActorPF extends ActorBasePF {
 
           const allLevelModFormula =
             spellbook[spellbook.spontaneous ? "castPerDayAllOffsetFormula" : "preparedAllOffsetFormula"] || "0";
-          const allLevelMod = RollPF$1.safeTotal(allLevelModFormula, rollData);
+          const allLevelMod = RollFFd20$1.safeTotal(allLevelModFormula, rollData);
 
           for (let a = 0; a < 10; a++) {
             const spellLevel = spellbook.spells[`spell${a}`];
@@ -20098,7 +20098,7 @@ class ActorPF extends ActorBasePF {
 
             const max =
               typeof spellsForLevel === "number" || (a === 0 && spellbook.hasCantrips)
-                ? spellsForLevel + getAbilityBonus(a) + allLevelMod + RollPF$1.safeTotal(offsetFormula, rollData)
+                ? spellsForLevel + getAbilityBonus(a) + allLevelMod + RollFFd20$1.safeTotal(offsetFormula, rollData)
                 : null;
 
             spellLevel.max = max;
@@ -20184,7 +20184,7 @@ class ActorPF extends ActorBasePF {
             const spellbookAbilityScore = spellbookAbility?.total;
 
             const allLevelModFormula = spellbook.preparedAllOffsetFormula || "0";
-            const allLevelMod = RollPF$1.safeTotal(allLevelModFormula, rollData);
+            const allLevelMod = RollFFd20$1.safeTotal(allLevelModFormula, rollData);
 
             for (let a = 0; a < 10; a++) {
               const spellLevel = spellbook.spells[`spell${a}`];
@@ -20206,7 +20206,7 @@ class ActorPF extends ActorBasePF {
                 available += allLevelMod;
 
                 const formula = spellLevel.preparedOffsetFormula || "0";
-                available += RollPF$1.safeTotal(formula, rollData);
+                available += RollFFd20$1.safeTotal(formula, rollData);
 
                 let dSlots = slots[a].domainSlots;
                 const used = spells.reduce((acc, i) => {
@@ -20259,7 +20259,7 @@ class ActorPF extends ActorBasePF {
         rollData.ablMod = spellbookAbilityMod;
         const spellClass = spellbook.class ?? "";
         rollData.classLevel = spellClass === "_hd" ? rollData.attributes.hd.total : rollData[spellClass]?.level || 0;
-        const roll = RollPF$1.safeRoll(formula, rollData);
+        const roll = RollFFd20$1.safeRoll(formula, rollData);
         spellbook.spellPoints.max = roll.total;
       }
 
@@ -20859,7 +20859,7 @@ class ActorPF extends ActorBasePF {
             let srcValue =
               src.value != null
                 ? src.value
-                : RollPF$1.safeRoll(src.formula || "0", rollData, [changeTarget, src, this], {
+                : RollFFd20$1.safeRoll(src.formula || "0", rollData, [changeTarget, src, this], {
                     suppressError: !this.testUserPermission(game.user, "OWNER"),
                   }).total;
             if (src.operator === "set") srcValue = game.i18n.localize("FFd20.SetTo").format(srcValue);
@@ -21245,7 +21245,7 @@ class ActorPF extends ActorBasePF {
     attackData["data.save"] = item.data._source.data.save;
 
     // Synthetic intermediate item
-    const attackItem = new ItemPF(expandObject(attackData));
+    const attackItem = new ItemFFd20(expandObject(attackData));
     // Create attack
     const itemData = await this.createEmbeddedDocuments("Item", [attackItem.toObject()]);
 
@@ -21384,7 +21384,7 @@ class ActorPF extends ActorBasePF {
 
     const props = [];
     if (notes.length > 0) props.push({ header: game.i18n.localize("FFd20.Notes"), value: notes });
-    return DicePF.d20Roll({
+    return DiceFFd20.d20Roll({
       actor: this,
       event: options.event,
       fastForward: options.skipDialog === true,
@@ -21414,7 +21414,7 @@ class ActorPF extends ActorBasePF {
    * @param {object} options      Options which configure how ability tests or saving throws are rolled
    */
   rollAbility(abilityId, options = { noSound: false, dice: "1d20" }) {
-    console.warn("ActorPF.rollAbility is obsolete; use ActorPF.rollAbilityTest instead.");
+    console.warn("ActorFFd20.rollAbility is obsolete; use ActorFFd20.rollAbilityTest instead.");
     this.rollAbilityTest(abilityId, options);
   }
 
@@ -21428,7 +21428,7 @@ class ActorPF extends ActorBasePF {
     const allowed = Hooks.call("actorRoll", this, "bab", null, options);
     if (allowed === false) return;
 
-    return DicePF.d20Roll({
+    return DiceFFd20.d20Roll({
       actor: this,
       event: options.event,
       parts: [`@mod[${game.i18n.localize("FFd20.BABAbbr")}]`],
@@ -21498,7 +21498,7 @@ class ActorPF extends ActorBasePF {
 
     const props = [];
     if (notes.length > 0) props.push({ header: game.i18n.localize("FFd20.Notes"), value: notes });
-    return DicePF.d20Roll({
+    return DiceFFd20.d20Roll({
       actor: this,
       event: options.event,
       parts,
@@ -21563,7 +21563,7 @@ class ActorPF extends ActorBasePF {
 
     const props = [];
     if (notes.length > 0) props.push({ header: game.i18n.localize("FFd20.Notes"), value: notes });
-    return DicePF.d20Roll({
+    return DiceFFd20.d20Roll({
       actor: this,
       event: options.event,
       parts: changes,
@@ -21598,7 +21598,7 @@ class ActorPF extends ActorBasePF {
 
     const props = [];
     if (notes.length > 0) props.push({ header: game.i18n.localize("FFd20.Notes"), value: notes });
-    return DicePF.d20Roll({
+    return DiceFFd20.d20Roll({
       actor: this,
       event: event,
       dice: options.dice,
@@ -21638,10 +21638,10 @@ class ActorPF extends ActorBasePF {
 
     let formulaRoll = 0;
     if (spellbook.concentrationFormula.length)
-      formulaRoll = RollPF$1.safeRoll(spellbook.concentrationFormula, rollData).total;
+      formulaRoll = RollFFd20$1.safeRoll(spellbook.concentrationFormula, rollData).total;
     rollData.formulaBonus = formulaRoll;
 
-    return DicePF.d20Roll({
+    return DiceFFd20.d20Roll({
       event: event,
       parts: [
         `@cl[${game.i18n.localize("FFd20.CasterLevel")}] + @mod[${
@@ -21802,7 +21802,7 @@ class ActorPF extends ActorBasePF {
     }
   ) {
     if (typeof options.skipPrompt === "boolean") {
-      console.warn(`The 'skipPrompt' option in ActorPF.rollSavingThrow is deprecated in favor of 'skipDialog'`);
+      console.warn(`The 'skipPrompt' option in ActorFFd20.rollSavingThrow is deprecated in favor of 'skipDialog'`);
       options.skipDialog = options.skipPrompt;
     }
 
@@ -21868,7 +21868,7 @@ class ActorPF extends ActorBasePF {
     const props = this.getDefenseHeaders();
     if (notes.length > 0) props.push({ header: game.i18n.localize("FFd20.Notes"), value: notes });
     const label = CONFIG.FFd20.savingThrows[savingThrowId];
-    return DicePF.d20Roll({
+    return DiceFFd20.d20Roll({
       actor: this,
       event: options.event,
       parts,
@@ -21937,7 +21937,7 @@ class ActorPF extends ActorBasePF {
     const props = [];
     if (notes.length > 0) props.push({ header: game.i18n.localize("FFd20.Notes"), value: notes });
 
-    return DicePF.d20Roll({
+    return DiceFFd20.d20Roll({
       actor: this,
       event: options.event,
       parts,
@@ -22102,8 +22102,8 @@ class ActorPF extends ActorBasePF {
       if (form) {
         value = form.find('[name="damage"]').val();
         let dR = form.find('[name="damage-reduction"]').val();
-        value = value.length ? RollPF$1.safeRoll(value, {}, []).total : 0;
-        dR = dR.length ? RollPF$1.safeRoll(dR, {}, []).total : 0;
+        value = value.length ? RollFFd20$1.safeRoll(value, {}, []).total : 0;
+        dR = dR.length ? RollFFd20$1.safeRoll(dR, {}, []).total : 0;
         if (multiplier < 0) {
           value = Math.ceil(value * multiplier);
           value = Math.min(value - dR, 0);
@@ -22353,7 +22353,7 @@ class ActorPF extends ActorBasePF {
   }
 
   /**
-   * @returns {ItemPF[]} All items on this actor, including those in containers.
+   * @returns {ItemFFd20[]} All items on this actor, including those in containers.
    */
   get allItems() {
     return [...this.containerItems, ...Array.from(this.items)];
@@ -23024,8 +23024,8 @@ class ActorPF extends ActorBasePF {
               .map((l) => actualChargeCost(l))
               .reduce((a, b) => a + b, 0) ?? 0,
           recharging: o.isCharged && o.chargeCost < 0,
-          color1: ItemPF.getTypeColor(o.type, 0),
-          color2: ItemPF.getTypeColor(o.type, 1),
+          color1: ItemFFd20.getTypeColor(o.type, 0),
+          color2: ItemFFd20.getTypeColor(o.type, 1),
         };
       });
   }
@@ -23167,7 +23167,7 @@ class ActorPF extends ActorBasePF {
     result.max += Math.ceil(totalLevels / 2);
 
     // Bonus feat formula
-    const featCountRoll = RollPF$1.safeRoll(this.data.data.details.bonusFeatFormula || "0", this.getRollData());
+    const featCountRoll = RollFFd20$1.safeRoll(this.data.data.details.bonusFeatFormula || "0", this.getRollData());
     result.max += featCountRoll.total;
     if (featCountRoll.err) {
       const msg = game.i18n
@@ -23295,7 +23295,7 @@ class ActorPF extends ActorBasePF {
           // Try to roll restoreFormula, fall back to restoring max spell points
           let restorePoints = spellbook.spellPoints.max;
           if (spellbook.spellPoints.restoreFormula) {
-            const restoreRoll = RollPF$1.safeRoll(spellbook.spellPoints.restoreFormula, this.getRollData());
+            const restoreRoll = RollFFd20$1.safeRoll(spellbook.spellPoints.restoreFormula, this.getRollData());
             if (restoreRoll.err) console.error(restoreRoll.err, spellbook.spellPoints.restoreFormula);
             else restorePoints = Math.min(spellbook.spellPoints.value + restoreRoll.total, spellbook.spellPoints.max);
           }
@@ -23407,7 +23407,7 @@ class ActorPF extends ActorBasePF {
   }
 }
 
-class ActorCharacterPF extends ActorPF {
+class ActorCharacterFFd20 extends ActorFFd20 {
   prepareBaseData() {
     super.prepareBaseData();
 
@@ -23486,7 +23486,7 @@ class ActorCharacterPF extends ActorPF {
       for (let a = 0; a < level; a++) {
         const rollData = this.getRollData();
         rollData.level = a + 1;
-        const roll = RollPF.safeRoll(expConfig.custom.formula, rollData);
+        const roll = RollFFd20.safeRoll(expConfig.custom.formula, rollData);
         totalXP += roll.total;
       }
     }
@@ -23494,7 +23494,7 @@ class ActorCharacterPF extends ActorPF {
   }
 }
 
-class ActorNPCPF extends ActorPF {
+class ActorNPCFFd20 extends ActorFFd20 {
   prepareBaseData() {
     super.prepareBaseData();
     this.data.data.details.cr.total = this.getCR(this.data.data);
@@ -23540,7 +23540,7 @@ class ActorNPCPF extends ActorPF {
     return templates.reduce((cur, o) => {
       const crOffset = o.data.data.crOffset;
       if (typeof crOffset === "string" && crOffset.length)
-        cur += RollPF.safeRoll(crOffset, this.getRollData(data)).total;
+        cur += RollFFd20.safeRoll(crOffset, this.getRollData(data)).total;
       return cur;
     }, base);
   }
@@ -23560,7 +23560,7 @@ class ActorNPCPF extends ActorPF {
 /**
  * Basic actor with no built-in functionality.
  */
-class BasicActorPF extends ActorBasePF {}
+class BasicActorFFd20 extends ActorBaseFFd20 {}
 
 /**
  * A specialized form used to select damage or condition types which apply to an Actor
@@ -24344,14 +24344,14 @@ class LevelUpForm extends FormApplication {
       result.chatData.hp = {
         label: "FFd20.LevelUp.Chat.Health.Manual",
         add: hpValue,
-        roll: RollPF$1.safeRoll(`${hpValue}`),
+        roll: RollFFd20$1.safeRoll(`${hpValue}`),
       };
       result.summary.hp = hpValue;
     }
     // Roll health
     else if (section.choice === "roll") {
       const formula = `1d${this.object.data.data.hd}`;
-      const roll = RollPF$1.safeRoll(formula);
+      const roll = RollFFd20$1.safeRoll(formula);
       result.chatData.hp = {
         label: "FFd20.LevelUp.Chat.Health.Roll",
         add: createInlineRollString(roll),
@@ -24504,7 +24504,7 @@ class LevelUpForm extends FormApplication {
       user: game.user.id,
       type: CONST.CHAT_MESSAGE_TYPES.ROLL,
       speaker,
-      roll: formData.hp?.roll ?? RollPF$1.safeRoll("0"),
+      roll: formData.hp?.roll ?? RollFFd20$1.safeRoll("0"),
     });
   }
 
@@ -24810,8 +24810,8 @@ class CurrencyTransfer extends FormApplication {
   /**
    * Transfer an amount of currency to a valid document
    *
-   * @param {Document} sourceDoc ActorPF or ItemPF with currency
-   * @param {Document} destDoc ActorPF or ItemPF with currency
+   * @param {Document} sourceDoc ActorFFd20 or ItemFFd20 with currency
+   * @param {Document} destDoc ActorFFd20 or ItemFFd20 with currency
    * @param {object|number} amount currency object containing transferred amount. Undefined keys will be assumed to be zero. Providing just a number will assume just gold
    * @param {boolean} sourceAlt Use alt currency on source
    * @param {boolean} destAlt Use alt currency on destination
@@ -24908,12 +24908,12 @@ class CurrencyTransfer extends FormApplication {
 }
 
 /**
- * Extend the basic ActorSheet class to do all the PF things!
+ * Extend the basic ActorSheet class to do all the FFd20 things!
  * This sheet is an Abstract layer which is not used.
  *
  * @type {ActorSheet}
  */
-class ActorSheetPF extends ActorSheet {
+class ActorSheetFFd20 extends ActorSheet {
   constructor(...args) {
     super(...args);
 
@@ -25320,7 +25320,7 @@ class ActorSheetPF extends ActorSheet {
     }
     // Count from bonus skill rank formula
     if (this.actor.data.data.details.bonusSkillRankFormula !== "") {
-      const roll = RollPF.safeRoll(this.actor.data.data.details.bonusSkillRankFormula, rollData);
+      const roll = RollFFd20.safeRoll(this.actor.data.data.details.bonusSkillRankFormula, rollData);
       if (roll.err) console.error(`An error occurred in the Bonus Skill Rank formula of actor ${this.actor.name}.`);
       skillRanks.allowed += roll.total;
       sourceData.push({
@@ -25373,7 +25373,7 @@ class ActorSheetPF extends ActorSheet {
       });
 
       // Bonus feat formula
-      const featCountRoll = RollPF.safeRoll(this.document.data.data.details.bonusFeatFormula || "0", rollData);
+      const featCountRoll = RollFFd20.safeRoll(this.document.data.data.details.bonusFeatFormula || "0", rollData);
       const changes = this.document.changes.filter((c) => c.subTarget === "bonusFeats");
       const changeBonus = getHighestChanges(
         changes.filter((c) => {
@@ -25668,7 +25668,7 @@ class ActorSheetPF extends ActorSheet {
         if (hasTypeFilter && !filters.has(`type-${data.featType}`)) return false;
       }
 
-      if (ItemPF.isInventoryItem(item.type)) {
+      if (ItemFFd20.isInventoryItem(item.type)) {
         if (hasTypeFilter && item.type !== "loot" && !filters.has(`type-${item.type}`)) return false;
         else if (hasTypeFilter && item.type === "loot" && !filters.has(`type-${data.subType}`)) return false;
       }
@@ -27144,7 +27144,7 @@ class ActorSheetPF extends ActorSheet {
         else if (item.type === "feat") arr[2].push(item);
         else if (item.type === "class") arr[3].push(item);
         else if (item.type === "attack") arr[4].push(item);
-        else if (ItemPF.isInventoryItem(item.type)) arr[0].push(item);
+        else if (ItemFFd20.isInventoryItem(item.type)) arr[0].push(item);
         return arr;
       },
       [[], [], [], [], []]
@@ -27575,7 +27575,7 @@ class ActorSheetPF extends ActorSheet {
   async _onDropItem(event, data) {
     if (!this.document.isOwner) return false;
 
-    const item = await ItemPF.implementation.fromDropData(data);
+    const item = await ItemFFd20.implementation.fromDropData(data);
     const itemData = item.toJSON();
 
     // Handle item sorting within the same actor
@@ -27611,7 +27611,7 @@ class ActorSheetPF extends ActorSheet {
    */
   _getSortSiblings(source) {
     return this.document.items.filter((i) => {
-      if (ItemPF.isInventoryItem(source.data.type)) return ItemPF.isInventoryItem(i.data.type);
+      if (ItemFFd20.isInventoryItem(source.data.type)) return ItemFFd20.isInventoryItem(i.data.type);
       return i.data.type === source.data.type && i.data.id !== source.data.id;
     });
   }
@@ -27802,12 +27802,12 @@ class ActorSheetPF extends ActorSheet {
 }
 
 /**
- * An Actor sheet for player character type actors in the PF system.
- * Extends the base ActorSheetPF class.
+ * An Actor sheet for player character type actors in the FFd20 system.
+ * Extends the base ActorSheetFFd20 class.
  *
- * @type {ActorSheetPF}
+ * @type {ActorSheetFFd20}
  */
-class ActorSheetPFCharacter extends ActorSheetPF {
+class ActorSheetFFd20Character extends ActorSheetFFd20 {
   /**
    * Define default rendering options for the NPC sheet
    *
@@ -27947,11 +27947,11 @@ class ActorSheetPFCharacter extends ActorSheetPF {
 
 /**
  * An Actor sheet for NPC type characters in the game system.
- * Extends the base ActorSheetPF class.
+ * Extends the base ActorSheetFFd20 class.
  *
- * @type {ActorSheetPF}
+ * @type {ActorSheetFFd20}
  */
-class ActorSheetPFNPC extends ActorSheetPF {
+class ActorSheetFFd20NPC extends ActorSheetFFd20 {
   /**
    * Define default rendering options for the NPC sheet
    *
@@ -27980,7 +27980,7 @@ class ActorSheetPFNPC extends ActorSheetPF {
   }
 
   // static get name() {
-  //   return game.i18n.localize("FFd20.ActorSheetPFNPC");
+  //   return game.i18n.localize("FFd20.ActorSheetFFd20NPC");
   // }
 
   /* -------------------------------------------- */
@@ -28067,13 +28067,13 @@ class ActorSheetPFNPC extends ActorSheetPF {
     event.preventDefault();
     const formula = this.actor.data.data.attributes.hp.formula;
     if (!formula) return;
-    const hp = RollPF.safeRoll(formula).total;
+    const hp = RollFFd20.safeRoll(formula).total;
     AudioHelper.play({ src: CONFIG.sounds.dice });
     this.actor.update({ "data.attributes.hp.value": hp, "data.attributes.hp.max": hp });
   }
 }
 
-class ActorSheetPFNPCLite extends ActorSheetPFNPC {
+class ActorSheetFFd20NPCLite extends ActorSheetFFd20NPC {
   /**
    * Define default rendering options for the NPC sheet
    *
@@ -28127,7 +28127,7 @@ class ActorSheetPFNPCLite extends ActorSheetPFNPC {
   }
 }
 
-class ActorSheetPFNPCLoot extends ActorSheetPFNPC {
+class ActorSheetFFd20NPCLoot extends ActorSheetFFd20NPC {
   /**
    * Define default rendering options for the NPC sheet
    *
@@ -28190,7 +28190,7 @@ class ActorSheetPFNPCLoot extends ActorSheetPFNPC {
 /**
  * Default dead sheet when no other exist.
  */
-class ActorSheetPFBasic extends ActorSheet {}
+class ActorSheetFFd20Basic extends ActorSheet {}
 
 class ActorSheetFlags extends DocumentSheet {
   static get defaultOptions() {
@@ -28331,14 +28331,14 @@ Hooks.on("getCombatTrackerEntryContext", function addCombatTrackerContextOptions
   });
 });
 
-class CombatPF extends Combat {
+class CombatFFd20 extends Combat {
   /**
    * Override the default Initiative formula to customize special behaviors of the game system.
    * Apply advantage, proficiency, or bonuses where appropriate
    * Apply the dexterity score as a decimal tiebreaker if requested
    * See Combat._getInitiativeFormula for more detail.
    *
-   * @param {ActorPF} actor
+   * @param {ActorFFd20} actor
    */
   _getInitiativeFormula(actor) {
     const defaultParts = ["1d20", "@attributes.init.total"];
@@ -28392,7 +28392,7 @@ class CombatPF extends Combat {
         // Produce an initiative roll for the Combatant
         const isHidden = c.token.hidden || c.hidden;
         if (isHidden) chatRollMode = messageOptions.rollMode ?? "gmroll";
-        const roll = await RollPF.create(formula, rollData).evaluate();
+        const roll = await RollFFd20.create(formula, rollData).evaluate();
         delete rollData.bonus;
         if (roll.err) ui.notifications.warn(roll.err.message);
         updates.push({ _id: id, initiative: roll.total });
@@ -28528,7 +28528,7 @@ class CombatPF extends Combat {
   }
 }
 
-class TokenPF extends Token {
+class TokenFFd20 extends Token {
   async _onUpdate(data, options, ...args) {
     await super._onUpdate(data, options, ...args);
 
@@ -28656,7 +28656,7 @@ class TokenPF extends Token {
   }
 }
 
-class TokenDocumentPF extends TokenDocument {
+class TokenDocumentFFd20 extends TokenDocument {
   async update(data, options) {
     // Resize token with actor size change
     const sizeKey = getProperty(data, "actorData.data.traits.size");
@@ -28670,7 +28670,7 @@ class TokenDocumentPF extends TokenDocument {
     return super.update(data, options);
   }
 
-  // Todo: Declare this in TokenDocumentPF when/ if TokenDocument.getData calls the constructor's method
+  // Todo: Declare this in TokenDocumentFFd20 when/ if TokenDocument.getData calls the constructor's method
   getTrackedAttributes(data, path = []) {
     const attr = super.getTrackedAttributes(data, path);
     if (path.length === 0) attr.value.push(["attributes", "hp", "temp"], ["attributes", "hp", "nonlethal"]);
@@ -29294,7 +29294,7 @@ class CompendiumBrowser extends Application {
 
   _filterItems(item) {
     if (this.type === "spells" && item.type !== "spell") return false;
-    if (this.type === "items" && !ItemPF.isInventoryItem(item.type)) return false;
+    if (this.type === "items" && !ItemFFd20.isInventoryItem(item.type)) return false;
     if (this.type === "feats" && item.type !== "feat") return false;
     if (this.type === "classes" && item.type !== "class") return false;
     if (this.type === "races" && item.type !== "race") return false;
@@ -30288,7 +30288,7 @@ class CompendiumBrowser extends Application {
   }
 }
 
-class SidebarPF extends Sidebar {
+class SidebarFFd20 extends Sidebar {
   constructor(...args) {
     super(...args);
 
@@ -30324,7 +30324,7 @@ class SidebarPF extends Sidebar {
 class ExperienceDistributor extends FormApplication {
   /**
    * @constructs ExperienceDistributor
-   * @param {ActorPF[]} [actors] - Actors to add to this distributor.
+   * @param {ActorFFd20[]} [actors] - Actors to add to this distributor.
    * @param {object} [options] - Options for this application.
    */
   constructor(actors = [], options = {}) {
@@ -30518,7 +30518,7 @@ class ExperienceDistributor extends FormApplication {
   }
 }
 
-class ActiveEffectPF extends ActiveEffect {
+class ActiveEffectFFd20 extends ActiveEffect {
   async create(data, context = {}) {
     const statusId = this.data["flags.core.statusId"],
       origin = this.data.origin, // DEPRECATED: Use origin flag instead.
@@ -30571,7 +30571,7 @@ class ActiveEffectPF extends ActiveEffect {
   }
 }
 
-class ItemAttackPF extends ItemPF {
+class ItemAttackFFd20 extends ItemFFd20 {
   getConditionalTargets() {
     const result = super.getConditionalTargets();
 
@@ -30585,7 +30585,7 @@ class ItemAttackPF extends ItemPF {
   }
 }
 
-class ItemBuffPF extends ItemPF {
+class ItemBuffFFd20 extends ItemFFd20 {
   async _preUpdate(changed, options, userId) {
     // Add activation time when not present
     if (changed.data?.active && changed.data?.duration?.start === undefined) {
@@ -30607,7 +30607,7 @@ class ItemBuffPF extends ItemPF {
       const dur = this.data.data.duration;
       const unit = C.timePeriodsShort[dur.units];
       if (unit && dur.value) {
-        const val = RollPF.safeTotal(dur.value, this.getRollData());
+        const val = RollFFd20.safeTotal(dur.value, this.getRollData());
         labels.duration = [val, unit].filterJoin(" ");
       } else {
         labels.duration = null;
@@ -30623,7 +30623,7 @@ class ItemBuffPF extends ItemPF {
     if (itemData.duration.value?.length) {
       let seconds = 0;
       const rollData = this.getRollData();
-      const duration = RollPF.safeRoll(itemData.duration.value || "0", rollData).total;
+      const duration = RollFFd20.safeRoll(itemData.duration.value || "0", rollData).total;
       switch (itemData.duration.units) {
         case "hour":
           seconds = duration * 60 * 60;
@@ -30686,7 +30686,7 @@ class ItemBuffPF extends ItemPF {
           break;
         }
         case "turn": {
-          const turns = RollPF.safeRoll(durationValue, this.getRollData()).total;
+          const turns = RollFFd20.safeRoll(durationValue, this.getRollData()).total;
           if (turns > 0) {
             createData.duration.turns = turns;
             seconds = turns * 6;
@@ -30694,7 +30694,7 @@ class ItemBuffPF extends ItemPF {
           break;
         }
         case "round": {
-          const rounds = RollPF.safeRoll(durationValue, this.getRollData()).total;
+          const rounds = RollFFd20.safeRoll(durationValue, this.getRollData()).total;
           if (rounds > 0) {
             createData.duration.rounds = rounds;
             seconds = rounds * 6;
@@ -30725,7 +30725,7 @@ class ItemBuffPF extends ItemPF {
   }
 }
 
-class ItemClassPF extends ItemPF {
+class ItemClassFFd20 extends ItemFFd20 {
   async delete(context = {}) {
     await this._onLevelChange(this.data.data.level, 0);
     return super.delete(context);
@@ -30836,7 +30836,7 @@ class ItemClassPF extends ItemPF {
           formula = saveFormulas[classType][saveType];
         }
         if (formula == null) formula = "0";
-        const total = RollPF.safeRoll(formula, { level: itemData.level, hitDice: this.hitDice }).total;
+        const total = RollFFd20.safeRoll(formula, { level: itemData.level, hitDice: this.hitDice }).total;
         itemData.savingThrows[save].base = total;
       }
     }
@@ -30852,7 +30852,7 @@ class ItemClassPF extends ItemPF {
       } else {
         formula = babFormulas[babType] || "0";
       }
-      itemData.babBase = RollPF.safeRoll(formula, { level: itemData.level, hitDice: this.hitDice }).total;
+      itemData.babBase = RollFFd20.safeRoll(formula, { level: itemData.level, hitDice: this.hitDice }).total;
     }
   }
 
@@ -30865,7 +30865,7 @@ class ItemClassPF extends ItemPF {
     if (itemData.hitDice === undefined) {
       if (itemData.customHD?.length > 0) {
         const rollData = { item: { level: this.data.data.level } };
-        itemData.hitDice = RollPF.safeRoll(itemData.customHD, rollData).total;
+        itemData.hitDice = RollFFd20.safeRoll(itemData.customHD, rollData).total;
       } else {
         itemData.hitDice = this.subType === "mythic" ? 0 : itemData.level;
       }
@@ -30883,13 +30883,13 @@ class ItemClassPF extends ItemPF {
   }
 }
 
-class ItemConsumablePF extends ItemPF {
+class ItemConsumableFFd20 extends ItemFFd20 {
   get subType() {
     return this.data.data.consumableType;
   }
 }
 
-class ItemContainerPF extends ItemPF {
+class ItemContainerFFd20 extends ItemFFd20 {
   async createContainerContent(data, options = { raw: false }) {
     const embeddedName = "Item";
     const user = game.user;
@@ -30911,7 +30911,7 @@ class ItemContainerPF extends ItemPF {
     }
 
     // Add to updates
-    const items = data.map((o) => (options.raw ? o : new ItemPF(o).data));
+    const items = data.map((o) => (options.raw ? o : new ItemFFd20(o).data));
     inventory.push(...items);
 
     // Filter items with duplicate _id
@@ -31045,7 +31045,7 @@ class ItemContainerPF extends ItemPF {
   }
 }
 
-class ItemEquipmentPF extends ItemPF {
+class ItemEquipmentFFd20 extends ItemFFd20 {
   get subType() {
     return this.data.data.equipmentType;
   }
@@ -31084,7 +31084,7 @@ class ItemEquipmentPF extends ItemPF {
   }
 }
 
-class ItemFeatPF extends ItemPF {
+class ItemFeatFFd20 extends ItemFFd20 {
   prepareData() {
     const itemData = super.prepareData();
     const data = itemData.data;
@@ -31120,7 +31120,7 @@ class ItemFeatPF extends ItemPF {
   }
 }
 
-class ItemLootPF extends ItemPF {
+class ItemLootFFd20 extends ItemFFd20 {
   get subType() {
     return this.data.data.subType;
   }
@@ -31135,9 +31135,9 @@ class ItemLootPF extends ItemPF {
   }
 }
 
-class ItemRacePF extends ItemPF {}
+class ItemRaceFFd20 extends ItemFFd20 {}
 
-class ItemSpellPF extends ItemPF {
+class ItemSpellFFd20 extends ItemFFd20 {
   prepareData() {
     const itemData = super.prepareData();
     const data = itemData.data;
@@ -31282,7 +31282,7 @@ class ItemSpellPF extends ItemPF {
   }
 
   async addSpellUses(value, data = null) {
-    console.warn("ItemPF.addSpellUses() is deprecated in favor of ItemSpellPF.addUses()");
+    console.warn("ItemFFd20.addSpellUses() is deprecated in favor of ItemSpellFFd20.addUses()");
     return this.addUses(value, data);
   }
 
@@ -31402,7 +31402,7 @@ class ItemSpellPF extends ItemPF {
       // Get conditional save DC bonus
       const dcBonus = rollData["dcBonus"] ?? 0;
 
-      return RollPF.safeRoll(formula, rollData).total + dcBonus;
+      return RollFFd20.safeRoll(formula, rollData).total + dcBonus;
     }
     return 10;
   }
@@ -31443,7 +31443,7 @@ class ItemSpellPF extends ItemPF {
   getSpellPointCost(rollData = null) {
     if (!rollData) rollData = this.getRollData();
 
-    return RollPF.safeRoll(this.data.data.spellPoints?.cost ?? "0", rollData).total;
+    return RollFFd20.safeRoll(this.data.data.spellPoints?.cost ?? "0", rollData).total;
   }
 
   getSpellComponents(srcData) {
@@ -31636,7 +31636,7 @@ class ItemSpellPF extends ItemPF {
     );
 
     // Create and return synthetic item data
-    return new ItemPF(expandObject(data)).data;
+    return new ItemFFd20(expandObject(data)).data;
   }
 
   /**
@@ -31799,7 +31799,7 @@ class ItemSpellPF extends ItemPF {
   }
 }
 
-class ItemWeaponPF extends ItemPF {
+class ItemWeaponFFd20 extends ItemFFd20 {
   prepareData() {
     const itemData = super.prepareData();
     itemData.data;
@@ -32179,7 +32179,7 @@ class FFd20_HelpBrowser extends Application {
  *
  * @type {ItemSheet}
  */
-class ItemSheetPF extends ItemSheet {
+class ItemSheetFFd20 extends ItemSheet {
   constructor(...args) {
     super(...args);
 
@@ -32908,10 +32908,10 @@ class ItemSheetPF extends ItemSheet {
     const conditionals = Object.entries(formData).filter((e) => e[0].startsWith("data.conditionals"));
     formData["data.conditionals"] = conditionals.reduce((arr, entry) => {
       const [i, j, k] = entry[0].split(".").slice(2);
-      if (!arr[i]) arr[i] = ItemPF.defaultConditional;
+      if (!arr[i]) arr[i] = ItemFFd20.defaultConditional;
       if (k) {
         formData[`data.conditionals.${i}.${j}.target`];
-        if (!arr[i].modifiers[j]) arr[i].modifiers[j] = ItemPF.defaultConditionalModifier;
+        if (!arr[i].modifiers[j]) arr[i].modifiers[j] = ItemFFd20.defaultConditionalModifier;
         arr[i].modifiers[j][k] = entry[1];
         // Target dependent keys
         if (["subTarget", "critical", "type"].includes(k)) {
@@ -33568,7 +33568,7 @@ class ItemSheetPF extends ItemSheet {
     if (a.classList.contains("add-conditional")) {
       await this._onSubmit(event); // Submit any unsaved changes
       const conditionals = this.item.data.data.conditionals || [];
-      return this.item.update({ "data.conditionals": conditionals.concat([ItemPF.defaultConditional]) });
+      return this.item.update({ "data.conditionals": conditionals.concat([ItemFFd20.defaultConditional]) });
     }
 
     // Remove a conditional
@@ -33585,7 +33585,7 @@ class ItemSheetPF extends ItemSheet {
       await this._onSubmit(event);
       const li = a.closest(".conditional");
       const conditionals = this.item.data.data.conditionals;
-      conditionals[Number(li.dataset.conditional)].modifiers.push(ItemPF.defaultConditionalModifier);
+      conditionals[Number(li.dataset.conditional)].modifiers.push(ItemFFd20.defaultConditionalModifier);
       // duplicate object to ensure update
       return this.item.update({ "data.conditionals": duplicate(conditionals) });
     }
@@ -33608,7 +33608,7 @@ class ItemSheetPF extends ItemSheet {
     if (a.classList.contains("add-note")) {
       const contextNotes = this.item.data.data.contextNotes || [];
       await this._onSubmit(event, {
-        updateData: { "data.contextNotes": contextNotes.concat([ItemPF.defaultContextNote]) },
+        updateData: { "data.contextNotes": contextNotes.concat([ItemFFd20.defaultContextNote]) },
       });
     }
 
@@ -33782,7 +33782,7 @@ class ItemSheetPF extends ItemSheet {
   }
 }
 
-class ItemSheetPF_Container extends ItemSheetPF {
+class ItemSheetFFd20_Container extends ItemSheetFFd20 {
   constructor(...args) {
     super(...args);
 
@@ -34302,7 +34302,7 @@ class ItemSheetPF_Container extends ItemSheetPF {
       actor = game.actors.get(data.actorId);
     }
 
-    const item = await ItemPF.fromDropData(data);
+    const item = await ItemFFd20.fromDropData(data);
     const itemData = duplicate(item.data);
 
     // Sort item
@@ -34316,7 +34316,7 @@ class ItemSheetPF_Container extends ItemSheetPF {
     }
 
     // Create or transfer item
-    if (ItemPF.isInventoryItem(item.data.type)) {
+    if (ItemFFd20.isInventoryItem(item.data.type)) {
       await this.item.createContainerContent(itemData);
 
       if (actor && actor === this.item.parentActor) {
@@ -34512,7 +34512,7 @@ class ItemSheetPF_Container extends ItemSheetPF {
    */
   _getSortSiblings(source) {
     return this.item.items.filter((i) => {
-      if (ItemPF.isInventoryItem(source.data.type)) return ItemPF.isInventoryItem(i.data.type);
+      if (ItemFFd20.isInventoryItem(source.data.type)) return ItemFFd20.isInventoryItem(i.data.type);
       return i.data.type === source.data.type && i.data._id !== source.data._id;
     });
   }
@@ -34591,7 +34591,7 @@ class ItemSheetPF_Container extends ItemSheetPF {
   }
 }
 
-class CompendiumDirectoryPF extends CompendiumDirectory {
+class CompendiumDirectoryFFd20 extends CompendiumDirectory {
   static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
       template: "systems/FFd20/templates/sidebar/compendium.hbs",
@@ -34694,7 +34694,7 @@ async function PatchCore() {
       const src = `with (sandbox) { return ${this.term}; }`;
       try {
         const evalFn = new Function("sandbox", src);
-        this._total = evalFn(RollPF.MATH_PROXY);
+        this._total = evalFn(RollFFd20.MATH_PROXY);
       } catch (err) {
         err.message = `Failed to evaluate: '${this.term}'\n${err.message}`;
         throw err;
@@ -34778,7 +34778,7 @@ async function PatchCore() {
  *
  * @augments {MeasuredTemplate}
  */
-class AbilityTemplate extends MeasuredTemplatePF {
+class AbilityTemplate extends MeasuredTemplateFFd20 {
   /**
    * A factory method to create an AbilityTemplate instance using provided data
    *
@@ -35271,7 +35271,7 @@ class AttackDialog extends Application {
       result.push(
         mergeObject(this.constructor.defaultAttack, {
           name: atk[1],
-          bonus: RollPF.safeTotal(atk[0], this.rollData),
+          bonus: RollFFd20.safeTotal(atk[0], this.rollData),
         })
       );
     }
@@ -35281,10 +35281,10 @@ class AttackDialog extends Application {
       count: this.object.data.data.formulaicAttacks?.count?.formula ?? null,
       bonus: this.object.data.data.formulaicAttacks?.bonus?.formula ?? "0",
     };
-    const atkCount = RollPF.safeTotal(attackFormulae.count, this.rollData) || 0;
+    const atkCount = RollFFd20.safeTotal(attackFormulae.count, this.rollData) || 0;
     for (let a = 0; a < atkCount; a++) {
       this.rollData.formulaicAttack = a + 1;
-      const bonus = RollPF.safeTotal(attackFormulae.bonus, this.rollData);
+      const bonus = RollFFd20.safeTotal(attackFormulae.bonus, this.rollData);
       const name = game.i18n.format(this.object.data.data.formulaicAttacks?.label || "FFd20.FormulaAttack", { 0: a + 2 });
       result.push(
         mergeObject(this.constructor.defaultAttack, {
@@ -35458,7 +35458,7 @@ class ChatAttack {
   /**
    * Sets the attack's item reference.
    *
-   * @param {ItemPF} item - The item to reference.
+   * @param {ItemFFd20} item - The item to reference.
    */
   setItem(item) {
     if (item == null) {
@@ -35484,7 +35484,7 @@ class ChatAttack {
     data.critMult = 1;
     data.critCount = 0;
     // Add critical confirmation bonus
-    data.critConfirmBonus = RollPF.safeTotal(data.item.critConfirmBonus || "0") ?? 0;
+    data.critConfirmBonus = RollFFd20.safeTotal(data.item.critConfirmBonus || "0") ?? 0;
     // Determine ability multiplier
     if (data.item.ability.damageMult != null) data.ablMult = data.item.ability.damageMult;
     // Lower ability multiplier for secondary attacks
@@ -35887,7 +35887,7 @@ class SquareHighlight {
  * Highlights the reach of an attack for a token.
  *
  * @param {Token} token
- * @param {ItemPF} attack
+ * @param {ItemFFd20} attack
  * @returns SquareHighlight
  */
 const showAttackReach = function (token, attack) {
@@ -35914,7 +35914,7 @@ const showAttackReach = function (token, attack) {
   if (["melee", "touch"].includes(minRangeKey)) minRange = range.melee;
   if (minRangeKey === "reach") minRange = range.reach;
   if (minRangeKey === "ft") {
-    minRange = RollPF.safeRoll(getProperty(attack.data, "data.range.minValue") || "0", rollData).total;
+    minRange = RollFFd20.safeRoll(getProperty(attack.data, "data.range.minValue") || "0", rollData).total;
   }
 
   const squares = {
@@ -35928,7 +35928,7 @@ const showAttackReach = function (token, attack) {
     squares.normal = getReachSquares(token, range.melee, minRange, null, { useReachRule });
     squares.reach = getReachSquares(token, range.reach, range.melee, null, { useReachRule });
   } else if (rangeKey === "ft") {
-    const r = RollPF.safeRoll(getProperty(attack.data, "data.range.value") || "0", rollData).total;
+    const r = RollFFd20.safeRoll(getProperty(attack.data, "data.range.value") || "0", rollData).total;
     squares.normal = getReachSquares(token, r, minRange, null, { useReachRule: true });
 
     // Add range increments
@@ -35949,10 +35949,10 @@ const showAttackReach = function (token, attack) {
     let r;
     switch (rangeKey) {
       case "close":
-        r = RollPF.safeRoll("25 + floor(@cl / 2) * 5", rollData).total;
+        r = RollFFd20.safeRoll("25 + floor(@cl / 2) * 5", rollData).total;
         break;
       case "medium":
-        r = RollPF.safeRoll("100 + @cl * 10", rollData).total;
+        r = RollFFd20.safeRoll("100 + @cl * 10", rollData).total;
         break;
     }
     squares.normal = getReachSquares(token, r, minRange, null, { useReachRule });
@@ -36232,7 +36232,7 @@ class TokenQuickActions {
 /**
  * @param {Object} options Configure testing.
  * @param {boolean} options.chatMessage Allow chat message creation by test functions.
- * @param {ActorPF|null} options.actor Actor to use for testing.
+ * @param {ActorFFd20|null} options.actor Actor to use for testing.
  * @param {boolean} options.synthetic Create synthetic actor. If false, create actual actor. Ignored if actor is provided.
  */
 const runUnitTests = async function (options = { chatMessage: true, synthetic: true, actor: null }) {
@@ -36272,7 +36272,7 @@ const runUnitTests = async function (options = { chatMessage: true, synthetic: t
 /**
  * Create synthetic actor
  *
- * @returns {ActorPF}
+ * @returns {ActorFFd20}
  */
 const createTestActor = async ({ synthetic = false } = {}) => {
   const fetchPackEntry = async (packName, itemName) => {
@@ -36420,7 +36420,7 @@ const _addSizeRollTest = async function (
   resultArr.push(test);
 
   try {
-    const roll = RollPF.safeRoll(
+    const roll = RollFFd20.safeRoll(
       `sizeRoll(${baseDie[0]}, ${baseDie[1]}, ${options.targetSize}, ${options.initialSize})`
     );
     if (roll.err) throw roll.err;
@@ -44406,7 +44406,7 @@ const _migrateItemChanges = function (ent, updateData) {
     const newNotes = [];
     for (const n of notes) {
       if (n instanceof Array) {
-        newNotes.push(mergeObject(ItemPF.defaultContextNote, { text: n[0], subTarget: n[2] }, { inplace: false }));
+        newNotes.push(mergeObject(ItemFFd20.defaultContextNote, { text: n[0], subTarget: n[2] }, { inplace: false }));
       } else {
         newNotes.push(n);
       }
@@ -45024,7 +45024,7 @@ const rollSaveMacro = function (actorId, saveId) {
  * @returns {Promise|void} The defense roll, or void if no actor is found
  */
 const rollDefenses = function ({ actorName = null, actorId = null, rollMode = null } = {}) {
-  const actor = ActorPF.getActiveActor({ actorName: actorName, actorId: actorId });
+  const actor = ActorFFd20.getActiveActor({ actorName: actorName, actorId: actorId });
   if (!actor) {
     const msg = game.i18n.format("FFd20.ErrorNoApplicableActorFoundForAction", {
       0: game.i18n.localize("FFd20.Action_RollDefenses"),
@@ -45376,7 +45376,7 @@ const generateAttacks = function (shared) {
   // Formulaic extra attacks
   if (shared.fullAttack) {
     const exAtkCountFormula = getProperty(this.data, "data.formulaicAttacks.count.formula"),
-      exAtkCount = RollPF.safeRoll(exAtkCountFormula, shared.rollData)?.total ?? 0,
+      exAtkCount = RollFFd20.safeRoll(exAtkCountFormula, shared.rollData)?.total ?? 0,
       exAtkBonusFormula = this.data.data.formulaicAttacks?.bonus?.formula || "0";
     if (exAtkCount > 0) {
       try {
@@ -45384,7 +45384,7 @@ const generateAttacks = function (shared) {
         const fatlabel = this.data.data.formulaicAttacks.label || game.i18n.localize("FFd20.FormulaAttack");
         for (let i = 0; i < exAtkCount; i++) {
           frollData["formulaicAttack"] = i + 1; // Add and update attack counter
-          const bonus = RollPF.safeRoll(exAtkBonusFormula, frollData).total;
+          const bonus = RollFFd20.safeRoll(exAtkBonusFormula, frollData).total;
           allAttacks.push({
             attackBonus: `(${bonus})[${game.i18n.localize("FFd20.Iterative")}]`,
             label: fatlabel.format(i + 2),
@@ -45462,14 +45462,14 @@ const handleConditionals = function (shared) {
       for (const [i, modifier] of conditional.modifiers.entries()) {
         // Adds a formula's result to rollData to allow referencing it.
         // Due to being its own roll, this will only correctly work for static formulae.
-        const conditionalRoll = RollPF.safeRoll(modifier.formula, shared.rollData);
+        const conditionalRoll = RollFFd20.safeRoll(modifier.formula, shared.rollData);
         if (conditionalRoll.err) {
           const msg = game.i18n.format("FFd20.WarningConditionalRoll", { number: i + 1, name: conditional.name });
           console.warn(msg);
           ui.notifications.warn(msg);
           // Skip modifier to avoid multiple errors from one non-evaluating entry
           continue;
-        } else conditionalData[[tag, i].join(".")] = RollPF.safeRoll(modifier.formula, shared.rollData).total;
+        } else conditionalData[[tag, i].join(".")] = RollFFd20.safeRoll(modifier.formula, shared.rollData).total;
 
         // Create a key string for the formula array
         const partString = `${modifier.target}.${modifier.subTarget}${
@@ -45506,7 +45506,7 @@ const handleConditionals = function (shared) {
     for (const target of ["effect.cl", "effect.dc", "misc.charges"]) {
       if (shared.conditionalPartsCommon[target] != null) {
         const formula = shared.conditionalPartsCommon[target].join("+");
-        const roll = RollPF.safeRoll(formula, shared.rollData, [target, formula]).total;
+        const roll = RollFFd20.safeRoll(formula, shared.rollData, [target, formula]).total;
         switch (target) {
           case "effect.cl":
             shared.rollData.cl += roll;
@@ -45715,7 +45715,7 @@ const promptMeasureTemplate = async function (shared) {
   // Determine size
   let dist = getProperty(this.data, "data.measureTemplate.size");
   if (typeof dist === "string") {
-    dist = RollPF.safeRoll(getProperty(this.data, "data.measureTemplate.size"), shared.rollData).total;
+    dist = RollFFd20.safeRoll(getProperty(this.data, "data.measureTemplate.size"), shared.rollData).total;
   }
   dist = convertDistance(dist)[0];
 
@@ -45913,7 +45913,7 @@ const getMessageData = async function (shared) {
     if (range != null) {
       shared.templateData.range = range;
       if (typeof range === "string") {
-        shared.templateData.range = RollPF.safeRoll(range, shared.rollData).total;
+        shared.templateData.range = RollFFd20.safeRoll(range, shared.rollData).total;
         shared.templateData.rangeFormula = range;
       }
       let usystem = game.settings.get("FFd20", "distanceUnits"); // override
@@ -45934,7 +45934,7 @@ const getMessageData = async function (shared) {
     if (this.parent.spellFailure > 0) {
       const spellbook = getProperty(this.parent.data, `data.attributes.spells.spellbooks.${this.data.data.spellbook}`);
       if (spellbook && spellbook.arcaneSpellFailure) {
-        const roll = RollPF.safeRoll("1d100");
+        const roll = RollFFd20.safeRoll("1d100");
         shared.templateData.spellFailure = roll.total;
         shared.templateData.spellFailureRoll = roll;
         shared.templateData.spellFailureSuccess = shared.templateData.spellFailure > this.parentActor.spellFailure;
@@ -46394,8 +46394,8 @@ Hooks.once("init", function () {
 
   // Create a FFd20 namespace within the game global
   game.FFd20 = {
-    polymorphism: { ActorBasePF, ItemBasePF },
-    documents: { ActorPF, ItemPF, TokenDocumentPF },
+    polymorphism: { ActorBaseFFd20, ItemBaseFFd20 },
+    documents: { ActorFFd20, ItemFFd20, TokenDocumentFFd20 },
     get entities() {
       // OBSOLETION WARNING
       console.error("game.FFd20.entities is obsolete; please use game.FFd20.documents instead.");
@@ -46403,27 +46403,27 @@ Hooks.once("init", function () {
     },
     applications: {
       // Actors
-      ActorSheetPF,
-      ActorSheetPFCharacter,
-      ActorSheetPFNPC,
-      ActorSheetPFNPCLite,
-      ActorSheetPFNPCLoot,
+      ActorSheetFFd20,
+      ActorSheetFFd20Character,
+      ActorSheetFFd20NPC,
+      ActorSheetFFd20NPCLite,
+      ActorSheetFFd20NPCLoot,
       // Items
-      ItemSheetPF,
-      ItemSheetPF_Container,
+      ItemSheetFFd20,
+      ItemSheetFFd20_Container,
       // Misc
       AttackDialog,
       ActorSheetFlags,
       ActorRestDialog,
       ActorTraitSelector,
-      CompendiumDirectoryPF,
+      CompendiumDirectoryFFd20,
       CompendiumBrowser,
       EntrySelector,
       LevelUpForm,
       PointBuyCalculator,
       ScriptEditor,
-      SidebarPF,
-      TooltipPF,
+      SidebarFFd20,
+      TooltipFFd20,
       FFd20_HelpBrowser,
       ExperienceDistributor,
       // Widgets
@@ -46432,7 +46432,7 @@ Hooks.once("init", function () {
     },
     compendiums: {},
     // Rolling
-    DicePF,
+    DiceFFd20,
     rollPreProcess: {
       sizeRoll: sizeDieExt,
       sizeReach: sizeReach,
@@ -46441,7 +46441,7 @@ Hooks.once("init", function () {
     //Chat
     chat: {
       ChatAttack,
-      ChatMessagePF,
+      ChatMessageFFd20,
       events: { targetACClick: targetACClick, targetSavingThrowClick: targetSavingThrowClick },
     },
     // Utility
@@ -46512,47 +46512,47 @@ Hooks.once("init", function () {
   };
 
   // Global exports
-  globalThis.RollPF = RollPF$1;
+  globalThis.RollFFd20 = RollFFd20$1;
 
   // Record Configuration Values
   CONFIG.FFd20 = FFd20;
-  CONFIG.Canvas.layers.templates.layerClass = TemplateLayerPF;
-  CONFIG.Canvas.layers.sight.layerClass = SightLayerPF;
-  CONFIG.AmbientLight.objectClass = AmbientLightPF;
-  CONFIG.MeasuredTemplate.objectClass = MeasuredTemplatePF;
+  CONFIG.Canvas.layers.templates.layerClass = TemplateLayerFFd20;
+  CONFIG.Canvas.layers.sight.layerClass = SightLayerFFd20;
+  CONFIG.AmbientLight.objectClass = AmbientLightFFd20;
+  CONFIG.MeasuredTemplate.objectClass = MeasuredTemplateFFd20;
   CONFIG.MeasuredTemplate.defaults.angle = 90; // FFd20 uses 90 degree angles
-  CONFIG.Actor.documentClass = ActorBasePF;
+  CONFIG.Actor.documentClass = ActorBaseFFd20;
   CONFIG.Actor.documentClasses = {
-    default: ActorPF, // fallback
+    default: ActorFFd20, // fallback
     // Specific types
-    character: ActorCharacterPF,
-    npc: ActorNPCPF,
-    basic: BasicActorPF,
+    character: ActorCharacterFFd20,
+    npc: ActorNPCFFd20,
+    basic: BasicActorFFd20,
   };
-  CONFIG.Token.documentClass = TokenDocumentPF;
-  CONFIG.Token.objectClass = TokenPF;
-  CONFIG.ActiveEffect.documentClass = ActiveEffectPF;
-  CONFIG.Item.documentClass = ItemBasePF;
+  CONFIG.Token.documentClass = TokenDocumentFFd20;
+  CONFIG.Token.objectClass = TokenFFd20;
+  CONFIG.ActiveEffect.documentClass = ActiveEffectFFd20;
+  CONFIG.Item.documentClass = ItemBaseFFd20;
   CONFIG.Item.documentClasses = {
-    default: ItemPF, // Fallback
+    default: ItemFFd20, // Fallback
     // Specific types
-    attack: ItemAttackPF,
-    buff: ItemBuffPF,
-    class: ItemClassPF,
-    consumable: ItemConsumablePF,
-    container: ItemContainerPF,
-    equipment: ItemEquipmentPF,
-    feat: ItemFeatPF,
-    loot: ItemLootPF,
-    race: ItemRacePF,
-    spell: ItemSpellPF,
-    weapon: ItemWeaponPF,
+    attack: ItemAttackFFd20,
+    buff: ItemBuffFFd20,
+    class: ItemClassFFd20,
+    consumable: ItemConsumableFFd20,
+    container: ItemContainerFFd20,
+    equipment: ItemEquipmentFFd20,
+    feat: ItemFeatFFd20,
+    loot: ItemLootFFd20,
+    race: ItemRaceFFd20,
+    spell: ItemSpellFFd20,
+    weapon: ItemWeaponFFd20,
     // etc.
   };
-  CONFIG.Combat.documentClass = CombatPF;
-  CONFIG.ui.compendium = CompendiumDirectoryPF;
-  CONFIG.ChatMessage.documentClass = ChatMessagePF;
-  CONFIG.Dice.rolls.splice(0, 0, RollPF$1);
+  CONFIG.Combat.documentClass = CombatFFd20;
+  CONFIG.ui.compendium = CompendiumDirectoryFFd20;
+  CONFIG.ChatMessage.documentClass = ChatMessageFFd20;
+  CONFIG.Dice.rolls.splice(0, 0, RollFFd20$1);
 
   CONFIG.time.roundTime = 6;
 
@@ -46571,22 +46571,22 @@ Hooks.once("init", function () {
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("FFd20", ActorSheetPFCharacter, {
+  Actors.registerSheet("FFd20", ActorSheetFFd20Character, {
     label: "FFd20.Sheet.PC",
     types: ["character"],
     makeDefault: true,
   });
-  Actors.registerSheet("FFd20", ActorSheetPFNPC, { label: "FFd20.Sheet.NPC", types: ["npc"], makeDefault: true });
-  Actors.registerSheet("FFd20", ActorSheetPFNPCLite, { label: "FFd20.Sheet.NPCLite", types: ["npc"], makeDefault: false });
-  Actors.registerSheet("FFd20", ActorSheetPFNPCLoot, { label: "FFd20.Sheet.NPCLoot", types: ["npc"], makeDefault: false });
-  Actors.registerSheet("FFd20", ActorSheetPFBasic, { label: "FFd20.Sheet.Basic", types: ["basic"], makeDefault: true });
+  Actors.registerSheet("FFd20", ActorSheetFFd20NPC, { label: "FFd20.Sheet.NPC", types: ["npc"], makeDefault: true });
+  Actors.registerSheet("FFd20", ActorSheetFFd20NPCLite, { label: "FFd20.Sheet.NPCLite", types: ["npc"], makeDefault: false });
+  Actors.registerSheet("FFd20", ActorSheetFFd20NPCLoot, { label: "FFd20.Sheet.NPCLoot", types: ["npc"], makeDefault: false });
+  Actors.registerSheet("FFd20", ActorSheetFFd20Basic, { label: "FFd20.Sheet.Basic", types: ["basic"], makeDefault: true });
   Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("FFd20", ItemSheetPF, {
+  Items.registerSheet("FFd20", ItemSheetFFd20, {
     label: "FFd20.Sheet.Item",
     types: ["class", "feat", "spell", "consumable", "equipment", "loot", "weapon", "buff", "attack", "race"],
     makeDefault: true,
   });
-  Items.registerSheet("FFd20", ItemSheetPF_Container, {
+  Items.registerSheet("FFd20", ItemSheetFFd20_Container, {
     label: "FFd20.Sheet.Container",
     types: ["container"],
     makeDefault: true,
@@ -46797,7 +46797,7 @@ Hooks.once("ready", async function () {
   game.FFd20.tooltip = null;
   const ttconf = game.settings.get("FFd20", "tooltipConfig");
   const ttwconf = game.settings.get("FFd20", "tooltipWorldConfig");
-  if (!ttconf.disable && !ttwconf.disable) TooltipPF.toggle(true);
+  if (!ttconf.disable && !ttwconf.disable) TooltipFFd20.toggle(true);
 
   window.addEventListener("resize", () => {
     game.FFd20.tooltip?.setPosition();
@@ -46943,11 +46943,11 @@ Hooks.on("renderChatPopout", (app, html, data) => {
   if (game.settings.get("FFd20", "hideChatButtons")) html.find(".card-buttons").hide();
 });
 
-Hooks.on("renderChatLog", (_, html) => ItemPF.chatListeners(html));
-Hooks.on("renderChatLog", (_, html) => ActorPF.chatListeners(html));
+Hooks.on("renderChatLog", (_, html) => ItemFFd20.chatListeners(html));
+Hooks.on("renderChatLog", (_, html) => ActorFFd20.chatListeners(html));
 
-Hooks.on("renderChatPopout", (_, html) => ItemPF.chatListeners(html));
-Hooks.on("renderChatPopout", (_, html) => ActorPF.chatListeners(html));
+Hooks.on("renderChatPopout", (_, html) => ItemFFd20.chatListeners(html));
+Hooks.on("renderChatPopout", (_, html) => ActorFFd20.chatListeners(html));
 
 Hooks.on("renderAmbientLightConfig", (app, html) => {
   addLowLightVisionToLightConfig(app, html);
@@ -46958,7 +46958,7 @@ Hooks.on("renderTokenHUD", (app, html, data) => {
 });
 
 Hooks.on("preUpdateItem", (item, changedData, options, userId) => {
-  const actor = item.parent instanceof ActorPF ? item.parent : null;
+  const actor = item.parent instanceof ActorFFd20 ? item.parent : null;
 
   if (actor) {
     // Update level
@@ -47019,7 +47019,7 @@ Hooks.on("controlToken", (token, selected) => {
 
 // Create race on actor
 Hooks.on("preCreateItem", (item, options, userId) => {
-  const actor = item.parent instanceof ActorPF ? item.parent : null;
+  const actor = item.parent instanceof ActorFFd20 ? item.parent : null;
 
   // Overwrite race
   if (actor && actor.race && item.type === "race") {
@@ -47029,7 +47029,7 @@ Hooks.on("preCreateItem", (item, options, userId) => {
 });
 
 Hooks.on("createItem", (item, options, userId) => {
-  const actor = item.parent instanceof ActorPF ? item.parent : null;
+  const actor = item.parent instanceof ActorFFd20 ? item.parent : null;
   if (userId !== game.user.id) return;
 
   // Show buff if active
@@ -47067,7 +47067,7 @@ Hooks.on("createItem", (item, options, userId) => {
 
 Hooks.on("deleteItem", async (item, options, userId) => {
   if (userId !== game.user.id) return;
-  const actor = item.parent instanceof ActorPF ? item.parent : null;
+  const actor = item.parent instanceof ActorFFd20 ? item.parent : null;
 
   if (actor) {
     // Remove token effects for deleted buff
@@ -47132,7 +47132,7 @@ Hooks.on("deleteItem", async (item, options, userId) => {
 
 Hooks.on("updateItem", async (item, changedData, options, userId) => {
   if (userId !== game.user.id) return;
-  const actor = item.parent instanceof ActorPF ? item.parent : null;
+  const actor = item.parent instanceof ActorFFd20 ? item.parent : null;
 
   if (actor) {
     // Toggle buff
@@ -47226,7 +47226,7 @@ Hooks.on("renderSidebarTab", (app, html) => {
 });
 
 // Add compendium sidebar context options
-Hooks.on("getCompendiumDirectoryPFEntryContext", (html, entryOptions) => {
+Hooks.on("getCompendiumDirectoryFFd20EntryContext", (html, entryOptions) => {
   // Add option to disable pack
   entryOptions.push({
     name: game.i18n.localize("FFd20.Disable"),
@@ -47301,5 +47301,5 @@ const handleChatTooltips = function (event) {
   elem.find(".tooltipcontent").css("left", `${x}px`).css("top", `${y}px`).css("width", `${w}px`);
 };
 
-export { ActiveEffectPF, ActorPF, ActorSheetPF, ActorSheetPFCharacter, ActorSheetPFNPC, ActorSheetPFNPCLite, ActorSheetPFNPCLoot, ChatAttack, ChatMessagePF, DicePF, ItemChange, ItemPF, ItemSheetPF, ItemSheetPF_Container, FFd20, RollPF$1 as RollPF, SemanticVersion, TokenDocumentPF, dialogGetActor, dialogGetNumber, getChangeFlat, getSourceInfo, measureDistances };
+export { ActiveEffectFFd20, ActorFFd20, ActorSheetFFd20, ActorSheetFFd20Character, ActorSheetFFd20NPC, ActorSheetFFd20NPCLite, ActorSheetFFd20NPCLoot, ChatAttack, ChatMessageFFd20, DiceFFd20, ItemChange, ItemFFd20, ItemSheetFFd20, ItemSheetFFd20_Container, FFd20, RollFFd20$1 as RollFFd20, SemanticVersion, TokenDocumentFFd20, dialogGetActor, dialogGetNumber, getChangeFlat, getSourceInfo, measureDistances };
 //# sourceMappingURL=FFd20.js.map

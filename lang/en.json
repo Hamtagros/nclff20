@@ -3,10 +3,10 @@
   "FFd20.title": "Pathfinder 1",
   "FFd20.description": "A comprehensive game system for running games of Pathfinder 1 in the Foundry VTT environment.",
 
-  "FFd20.ActorSheetPFCharacter": "Character",
-  "FFd20.ActorSheetPFNPC": "NPC",
-  "FFd20.ActorSheetPFNPCLite": "NPC (Lite)",
-  "FFd20.ActorSheetPFNPCLoot": "Loot",
+  "FFd20.ActorSheetFFd20Character": "Character",
+  "FFd20.ActorSheetFFd20NPC": "NPC",
+  "FFd20.ActorSheetFFd20NPCLite": "NPC (Lite)",
+  "FFd20.ActorSheetFFd20NPCLoot": "Loot",
 
   "SETTINGS.FFd20DiagN": "Diagonal Movement Rule",
   "SETTINGS.FFd20DiagL": "Configure which diagonal movement rule should be used for games within this system.",
