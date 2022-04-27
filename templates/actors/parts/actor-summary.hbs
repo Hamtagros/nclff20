@@ -359,6 +359,65 @@
         {{/select}}
       </select>
     </div>
+    <div class="flexcol mana-details pseudo-table">
+      <h3 class="header">{{localize "FFd20.ManaPoints"}}</h3>
+      <ul class='flexrow'>
+        <li class='flexcol current'>
+          <h4 class='sub-header'>{{localize "FFd20.Current"}}</h4>
+          <span class="value text-box direct wheel-change allow-relative mp-current-input" name="data.attributes.mp.value" data-dtype="Number">{{data.attributes.mp.value}}</span>
+        </li>
+        <li class='flexcol maximum'>
+          <h4 class='sub-header'>{{localize "FFd20.Maximum"}}</h4>
+          <span class="value text-box readonly mp-max">{{data.attributes.mp.max}}</span>
+        </li>
+        <li class='flexcol temp'>
+          <h4 class='sub-header'>{{localize "FFd20.TempShort"}}</h4>
+          <span class="value text-box direct allow-relative mp-temp-input" name="data.attributes.mp.temp" data-dtype="Number">{{#if data.attributes.mp.temp}}{{data.attributes.mp.temp}}{{/if}}</span>
+        </li>
+        <li class='flexcol recover'>
+          <h4 class='sub-header'>{{localize "FFd20.Recover"}}</h4>
+          <span class="value text-box direct allow-relative mp-recover-input" name="data.attributes.mp.recover" data-dtype="Number">{{#if data.attributes.mp.recover}}{{data.attributes.mp.recover}}{{/if}}</span>
+        </li>
+      </ul>
+      <div class="tooltipcontent">
+        @attributes.mp.value : {{data.attributes.mp.value}}<br/>
+        @attributes.mp.max : {{data.attributes.mp.max}}<br/>
+        @attributes.mp.temp : {{data.attributes.mp.temp}}<br/>
+        @attributes.mp.recover : {{data.attributes.mp.recover}}
+
+        {{#if sourceDetails.data.attributes.mp.max.length}}
+        <br/><br/>{{localize "FFd20.FromSources"}}:<br/>
+        {{#each sourceDetails.data.attributes.mp.max as |src|}}{{src.name}}: {{src.value}}<br/>{{/each}}
+        {{/if}}
+      </div>
+    </div>
+    <div class="flexcol limit-details pseudo-table">
+      <h3 class="header">{{localize "FFd20.LimitBreak"}}</h3>
+      <ul class='flexrow'>
+        <li class='flexcol current'>
+          <h4 class='sub-header'>{{localize "FFd20.Current"}}</h4>
+          <span class="value text-box direct wheel-change allow-relative limit-current-input" name="data.attributes.limitbreak.value" data-dtype="Number">{{data.attributes.limitbreak.value}}</span>
+        </li>
+        <li class='flexcol maximum'>
+          <h4 class='sub-header'>{{localize "FFd20.Maximum"}}</h4>
+          <span class="value text-box readonly limit-max">{{data.attributes.limitbreak.max}}</span>
+        </li>
+        <li class='flexcol temp'>
+          <h4 class='sub-header'>{{localize "FFd20.TempShort"}}</h4>
+          <span class="value text-box direct allow-relative limit-temp-input" name="data.attributes.limitbreak.temp" data-dtype="Number">{{#if data.attributes.limitbreak.temp}}{{data.attributes.limitbreak.temp}}{{/if}}</span>
+        </li>
+      </ul>
+      <div class="tooltipcontent">
+        @attributes.limitbreak.value : {{data.attributes.limitbreak.value}}<br/>
+        @attributes.limitbreak.max : {{data.attributes.limitbreak.max}}<br/>
+        @attributes.limitbreak.temp : {{data.attributes.limitbreak.temp}}<br/>
+
+        {{#if sourceDetails.data.attributes.limitbreak.max.length}}
+        <br/><br/>{{localize "FFd20.FromSources"}}:<br/>
+        {{#each sourceDetails.data.attributes.limitbreak.max as |src|}}{{src.name}}: {{src.value}}<br/>{{/each}}
+        {{/if}}
+      </div>
+    </div>
 </div>
 
 {{!-- Footer --}}

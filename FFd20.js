@@ -44002,6 +44002,7 @@ const _migrateActorBaseStats = function (ent, updateData) {
   const keys = [
     "data.attributes.hp.base",
     "data.attributes.hd.base",
+    "data.attributes.mp.base",
     "data.attributes.savingThrows.fort.value",
     "data.attributes.savingThrows.ref.value",
     "data.attributes.savingThrows.will.value",
@@ -44009,6 +44010,8 @@ const _migrateActorBaseStats = function (ent, updateData) {
   for (const k of keys) {
     if (k === "data.attributes.hp.base" && !(getProperty(ent, "items") || []).filter((o) => o.type === "class").length)
       continue;
+    if (k === "data.attributes.mp.base" && !(getProperty(ent, "items") || []).filter((o) => o.type === "class").length)
+    continue;
     if (getProperty(ent, k) != null) {
       const kList = k.split(".");
       kList[kList.length - 1] = `-=${kList[kList.length - 1]}`;
