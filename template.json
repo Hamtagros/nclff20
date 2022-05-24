@@ -107,6 +107,18 @@
             "base": 0,
             "max": 0
           },
+          "mp": {
+            "value": 0,
+            "base": 0,
+            "max": 0,
+            "temp": 0,
+            "recover": 0
+          },
+          "limitbreak": {
+            "value": 0,
+            "base": 0,
+            "max": 0
+          },
           "init": {
             "value": 0,
             "ability": "dex"
@@ -146,19 +158,15 @@
                 "concentrationNotes": "",
                 "clNotes": "",
                 "ability": "int",
-                "autoSpellLevelCalculation": true,
-                "autoSpellLevels": true,
-                "psychic": false,
+                "autoSpellLevelCalculation": false,
+                "autoSpellLevels": false,
                 "arcaneSpellFailure": true,
                 "hasCantrips": true,
                 "spellPreparationMode": "spontaneous",
                 "baseDCFormula": "10 + @sl + @ablMod",
-                "spontaneous": false,
+                "spontaneous": true,
                 "spellPoints": {
-                  "useSystem": false,
-                  "value": 0,
-                  "maxFormula": "",
-                  "restoreFormula": ""
+                  "useSystem": true
                 },
                 "spells": {
                   "spell0": {
@@ -219,19 +227,15 @@
                 "concentrationNotes": "",
                 "clNotes": "",
                 "ability": "int",
-                "autoSpellLevelCalculation": true,
-                "autoSpellLevels": true,
-                "psychic": false,
+                "autoSpellLevelCalculation": false,
+                "autoSpellLevels": false,
                 "arcaneSpellFailure": true,
                 "hasCantrips": true,
                 "spellPreparationMode": "spontaneous",
                 "baseDCFormula": "10 + @sl + @ablMod",
-                "spontaneous": false,
+                "spontaneous": true,
                 "spellPoints": {
-                  "useSystem": false,
-                  "value": 0,
-                  "maxFormula": "",
-                  "restoreFormula": ""
+                  "useSystem": true
                 },
                 "spells": {
                   "spell0": {
@@ -292,19 +296,84 @@
                 "concentrationNotes": "",
                 "clNotes": "",
                 "ability": "int",
-                "autoSpellLevelCalculation": true,
-                "autoSpellLevels": true,
-                "psychic": false,
+                "autoSpellLevelCalculation": false,
+                "autoSpellLevels": false,
                 "arcaneSpellFailure": true,
                 "hasCantrips": true,
                 "spellPreparationMode": "spontaneous",
                 "baseDCFormula": "10 + @sl + @ablMod",
-                "spontaneous": false,
+                "spontaneous": true,
                 "spellPoints": {
-                  "useSystem": false,
-                  "value": 0,
-                  "maxFormula": "",
-                  "restoreFormula": ""
+                  "useSystem": true
+                },
+                "spells": {
+                  "spell0": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell1": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell2": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell3": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell4": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell5": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell6": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell7": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell8": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  },
+                  "spell9": {
+                    "castPerDayOffsetFormula": "",
+                    "preparedOffsetFormula": ""
+                  }
+                },
+                "spellSlotAbilityBonusFormula": "",
+                "domainSlotValue": 1
+              },
+              "quaternary": {
+                "altName": "",
+                "castPerDayAllOffsetFormula": "",
+                "preparedAllOffsetFormula": "",
+                "name": "Quaternary",
+                "casterType": "high",
+                "class": "",
+                "cl": {
+                  "formula": ""
+                },
+                "concentrationFormula": "",
+                "concentrationNotes": "",
+                "clNotes": "",
+                "ability": "int",
+                "autoSpellLevelCalculation": false,
+                "autoSpellLevels": false,
+                "arcaneSpellFailure": true,
+                "hasCantrips": true,
+                "spellPreparationMode": "spontaneous",
+                "baseDCFormula": "10 + @sl + @ablMod",
+                "spontaneous": true,
+                "spellPoints": {
+                  "useSystem": true
                 },
                 "spells": {
                   "spell0": {
@@ -365,19 +434,15 @@
                 "concentrationNotes": "",
                 "clNotes": "",
                 "ability": "cha",
-                "autoSpellLevelCalculation": true,
-                "autoSpellLevels": true,
-                "psychic": false,
+                "autoSpellLevelCalculation": false,
+                "autoSpellLevels": false,
                 "arcaneSpellFailure": true,
                 "hasCantrips": true,
                 "spellPreparationMode": "spontaneous",
                 "baseDCFormula": "10 + @sl + @ablMod",
-                "spontaneous": false,
+                "spontaneous": true,
                 "spellPoints": {
-                  "useSystem": false,
-                  "value": 0,
-                  "maxFormula": "",
-                  "restoreFormula": ""
+                  "useSystem": false
                 },
                 "spells": {
                   "spell0": {
@@ -460,223 +525,241 @@
           }
         },
         "skills": {
-          "acr": {
+          "acr": {"name": "Acrobatics",
             "ability": "dex",
             "rt": false,
             "acp": true,
             "rank": 0
           },
-          "apr": {
+          "apr": {"name": "Appraise",
             "ability": "int",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "art": {
-            "ability": "int",
-            "rt": false,
-            "acp": false,
-            "rank": 0
-          },
-          "blf": {
+          "blf": {"name": "Bluff",
             "ability": "cha",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "clm": {
+          "clm": {"name": "Climb",
             "ability": "str",
             "rt": false,
             "acp": true,
             "rank": 0
           },
-          "crf": {
+          "crf": {"name": "craft skills",
             "ability": "int",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "dip": {
+          "dip": {"name": "Diplomacy",
             "ability": "cha",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "dev": {
+          "dev": {"name": "Disable Device",
             "ability": "dex",
             "rt": true,
             "acp": true,
             "rank": 0
           },
-          "dis": {
+          "dis": {"name": "Disguise",
             "ability": "cha",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "esc": {
+          "dri": {"name": "Drive",
+            "ability": "dex",
+            "rt": false,
+            "acp": false,
+            "rank": 0
+          },
+          "esc": {"name": "Escape Artist",
             "ability": "dex",
             "rt": false,
             "acp": true,
             "rank": 0
           },
-          "fly": {
+          "fly": {"name": "Fly",
             "ability": "dex",
             "rt": false,
             "acp": true,
             "rank": 0
           },
-          "han": {
+          "han": {"name": "Handle Animal",
             "ability": "cha",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "hea": {
+          "hea": {"name": "Heal",
             "ability": "wis",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "int": {
+          "int": {"name": "Intimidate",
             "ability": "cha",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "kar": {
+          "kar": {"name": "Knowledge (arcana)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "kdu": {
+          "kdu": {"name": "Knowledge (dungeoneering)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "ken": {
+          "ken": {"name": "Knowledge (engineering)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "kge": {
+          "kge": {"name": "Knowledge (geography)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "khi": {
+          "khi": {"name": "Knowledge (history)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "klo": {
+          "klo": {"name": "Knowledge (local)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "kna": {
+          "kna": {"name": "Knowledge (nature)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "kno": {
+          "kno": {"name": "Knowledge (nobility)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "kpl": {
+          "kpl": {"name": "Knowledge (planes)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "kre": {
+          "kre": {"name": "Knowledge (religion)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "lin": {
+          "kte": {"name": "Knowledge (technology)",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "lor": {
+          "lin": {"name": "Linguistics",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "per": {
+          "nav": {"name": "Navigate",
+            "ability": "int",
+            "rt": true,
+            "acp": false,
+            "rank": 0
+          },
+          "per": {"name": "Perception",
             "ability": "wis",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "prf": {
+          "prf": {"name": "Perform",
             "ability": "cha",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "pro": {
+          "pil": {"name": "Pilot",
+            "ability": "dex",
+            "rt": true,
+            "acp": false,
+            "rank": 0
+          },
+          "pro": {"name": "Profession",
             "ability": "wis",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "rid": {
+          "rep": {"name": "Repair",
+            "ability": "int",
+            "rt": false,
+            "acp": false,
+            "rank": 0
+          },
+          "rid": {"name": "Ride",
             "ability": "dex",
             "rt": false,
             "acp": true,
             "rank": 0
           },
-          "sen": {
+          "sen": {"name": "Sense Motive",
             "ability": "wis",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "slt": {
+          "slt": {"name": "Sleight of Hand",
             "ability": "dex",
             "rt": true,
             "acp": true,
             "rank": 0
           },
-          "spl": {
+          "spl": {"name": "Spellcraft",
             "ability": "int",
             "rt": true,
             "acp": false,
             "rank": 0
           },
-          "ste": {
+          "ste": {"name": "Stealth",
             "ability": "dex",
             "rt": false,
             "acp": true,
             "rank": 0
           },
-          "sur": {
+          "sur": {"name": "Survival",
             "ability": "wis",
             "rt": false,
             "acp": false,
             "rank": 0
           },
-          "swm": {
+          "swm": {"name": "Swim",
             "ability": "str",
             "rt": false,
             "acp": true,
             "rank": 0
           },
-          "umd": {
+          "umd": {"name": "Use Magic Device",
             "ability": "cha",
             "rt": true,
             "acp": false,
@@ -711,16 +794,16 @@
           "stature": "tall"
         },
         "currency": {
-          "pp": 0,
-          "gp": 0,
-          "sp": 0,
-          "cp": 0
+          "pgil": 0,
+          "gil": 0,
+          "sgil": 0,
+          "cgil": 0
         },
         "altCurrency": {
-          "pp": 0,
-          "gp": 0,
-          "sp": 0,
-          "cp": 0
+          "pgil": 0,
+          "gil": 0,
+          "sgil": 0,
+          "cgil": 0
         }
       }
     },
@@ -736,6 +819,32 @@
         "gender": "",
         "deity": "",
         "age": ""
+      },
+      "classResource": {
+        "res1": {
+          "name": "Resource 1",
+          "value": 0,
+          "max": 0,
+          "on": false
+        },
+        "res2": {
+          "name": "Resource 2",
+          "value": 0,
+          "max": 0,
+          "on": false
+        },
+        "res3": {
+          "name": "Resource 3",
+          "value": 0,
+          "max": 0,
+          "on": false
+        },
+        "res4": {
+          "name": "Resource 4",
+          "value": 0,
+          "max": 0,
+          "on": false
+        }
       },
       "traits": {
         "weaponProf": {
@@ -951,6 +1060,10 @@
       "level": 1,
       "hd": 8,
       "hp": 8,
+      "classCastingStat": "noncaster",
+      "classBaseMPTypes": "noncaster",
+      "classBaseMPauto": "yes",
+      "mp": 0,
       "bab": "low",
       "skillsPerLevel": 0,
       "savingThrows": {
@@ -1029,6 +1142,19 @@
       "slot": "slotless",
       "links": {
         "charges": []
+      },
+      "isMateria": false,
+      "materiaRarity": "common",
+      "materiaSlot": "unslotted",
+      "materiaLevel":"0",
+      "materiaCombatXp": {
+        "value": 0,
+        "next": 0,
+        "lv0": 0,
+        "lv1": 0,
+        "lv2": 0,
+        "lv3": 0,
+        "mastered": 0
       }
     },
     "feat": {
@@ -1119,7 +1245,7 @@
       "spellArea": "",
       "showInQuickbar": false,
       "spellPoints": {
-        "cost": "1 + @sl"
+        "cost": "@sl"
       },
       "domain": false,
       "slotCost": 1

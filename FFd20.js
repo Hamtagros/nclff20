@@ -19933,7 +19933,6 @@ class ActorFFd20 extends ActorBaseFFd20 {
       let clTotal = 0;
       {
         const key = `data.attributes.spells.spellbooks.${spellbookKey}.cl.total`;
-        console.log(key);
         const formula = spellbook.cl.formula || "0";
         let total = 0;
 
