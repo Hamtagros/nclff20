@@ -25495,7 +25495,7 @@ class ActorSheetFFd20 extends ActorSheet {
 
   _prepareTraits(traits) {
     const map = {
-      // "dr": CONFIG.FFd20.damageTypes,
+      dr: CONFIG.FFd20.damageTypes,
       di: CONFIG.FFd20.damageTypes,
       dv: CONFIG.FFd20.damageTypes,
       ci: CONFIG.FFd20.conditionTypes,
