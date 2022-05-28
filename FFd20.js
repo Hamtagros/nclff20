@@ -283,6 +283,9 @@ const FFd20 = {
   weaponProficiencies: {
     sim: "FFd20.WeaponProfSimple",
     mar: "FFd20.WeaponProfMartial",
+    exo: "clff20.WeaponProfExotic",
+    che: "clff20.WeaponProfChef",
+    pow: "clff20.WeaponProfPower",
   },
 
   /* -------------------------------------------- */
