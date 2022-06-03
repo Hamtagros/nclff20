@@ -25511,6 +25511,7 @@ class ActorSheetFFd20 extends ActorSheet {
       if (["armorProf", "weaponProf"].includes(t)) {
         values = trait.total ?? trait.value;
       } else if (trait.value) {
+        console.log(trait.value);
         values = trait.value instanceof Array ? trait.value : [trait.value];
       }
       trait.selected = values.reduce((obj, t) => {
