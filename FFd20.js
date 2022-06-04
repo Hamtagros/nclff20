@@ -20373,14 +20373,14 @@ class ActorFFd20 extends ActorBaseFFd20 {
     // NPCs are considered proficient with their armor
     // Collect proficiencies from items, add them to actor's proficiency totals
     const proficiencies = {
-      armorProf: CONFIG.PF1.armorProficiencies,
-      weaponProf: CONFIG.PF1.weaponProficiencies,
-      languages: CONFIG.PF1.languages,
+      armorProf: CONFIG.FFd20.armorProficiencies,
+      weaponProf: CONFIG.FFd20.weaponProficiencies,
+      languages: CONFIG.FFd20.languages,
     };
     for (const [prof, translations] of Object.entries(proficiencies)) {
       // Custom proficiency baseline from actor
       const customProficiencies =
-        actorData.traits[prof]?.custom?.split(CONFIG.PF1.re.traitSeparator).filter((item) => item.length > 0) || [];
+        actorData.traits[prof]?.custom?.split(CONFIG.FFd20.re.traitSeparator).filter((item) => item.length > 0) || [];
 
       // Iterate over all items to create one array of non-custom proficiencies
       const proficiencies = this.items.reduce(
@@ -20407,7 +20407,7 @@ class ActorFFd20 extends ActorBaseFFd20 {
             // Collect trimmed but otherwise original proficiency strings, dedupe array for actor's total
             const customProfs =
               item.data.data[prof].custom
-                ?.split(CONFIG.PF1.re.traitSeparator)
+                ?.split(CONFIG.FFd20.re.traitSeparator)
                 .map((i) => i.trim())
                 .filter((el, i, arr) => el.length > 0 && arr.indexOf(el) === i) || [];
             // Add readable custom profs to sources and overall collection
@@ -23528,7 +23528,7 @@ class ActorNPCFFd20 extends ActorFFd20 {
 
   hasArmorProficiency(item, proficiencyName) {
     // Assume NPCs to be proficient with their armor
-    return game.settings.get("pf1", "npcProficiencies") ? super.hasArmorProficiency(item, proficiencyName) : true;
+    return game.settings.get("FFd20", "npcProficiencies") ? super.hasArmorProficiency(item, proficiencyName) : true;
   }
 
   /* Not used by NPCs */
