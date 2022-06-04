@@ -23528,7 +23528,7 @@ class ActorNPCFFd20 extends ActorFFd20 {
 
   hasArmorProficiency(item, proficiencyName) {
     // Assume NPCs to be proficient with their armor
-    return true;
+    return game.settings.get("pf1", "npcProficiencies") ? super.hasArmorProficiency(item, proficiencyName) : true;
   }
 
   /* Not used by NPCs */
