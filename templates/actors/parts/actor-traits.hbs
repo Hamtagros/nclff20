@@ -87,7 +87,7 @@
       {{#each data.traits.languages.selected as |v k|}}
       <li class="tag {{k}}">{{v}}</li>
       {{/each}}
-            {{#if sourceDetails.data.traits.languages.length}}
+      {{#if sourceDetails.data.traits.languages.length}}
         <div class="tooltipcontent">
           {{localize "PF1.FromSources"}}:<br/>
           {{#each sourceDetails.data.traits.languages as |src|}}{{src.name}}: {{src.value}}<br/>{{/each}}
