@@ -1034,6 +1034,10 @@
         "weaponProf": {
           "value": [],
           "custom": ""
+        },
+        "languages": {
+          "value": [],
+          "custom": ""
         }
       },
       "flags": {
